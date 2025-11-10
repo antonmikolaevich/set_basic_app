@@ -38,16 +38,16 @@
 - Jest for unit testing
 
 ### Project Structure
-|-- app.js
-|-- api_helpers/
-|-- controllers/
-|-- crud_tests/
-|-- data/
-|-- models/
-|-- routes/
-|-- swagger/
-|-- .env
-|-- .mocharc.js
-|-- package.json
-|-- package-lock.json
-|-- README.md
+|-- app.js\
+|-- api_helpers/\
+|-- controllers/\
+|-- crud_tests/\
+|-- data/\
+|-- models/\
+|-- routes/\
+|-- swagger/\
+|-- .env\
+|-- .mocharc.js\
+|-- package.json\
+|-- package-lock.json\
+|-- README.md\
