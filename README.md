@@ -1,6 +1,6 @@
 ### How to clone the repo
 1. Open your terminal.
-2. Run the command `git clone https://github.com/your-username/your-repo.git`.
+2. Run the command `git clone https://git.epam.com/anton_rak/set_basic_api_js.git`.
 3. Navigate to the project directory using `cd your-repo`.
 
 ### How to run the app
@@ -38,16 +38,20 @@
 - Jest for unit testing
 
 ### Project Structure
-|-- app.js\
 |-- api_helpers/\
 |-- controllers/\
+|-- coverage/\
 |-- crud_tests/\
 |-- data/\
 |-- models/\
 |-- routes/\
 |-- swagger/\
+|-- unit_tests/\
 |-- .env\
+|-- .gitignore\
 |-- .mocharc.js\
-|-- package.json\
+|-- app.js\
+|-- jest.config.js\
 |-- package-lock.json\
+|-- package.json\
 |-- README.md\
