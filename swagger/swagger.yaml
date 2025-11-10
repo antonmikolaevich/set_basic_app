@@ -1,0 +1,492 @@
+openapi: 3.0.0
+info:
+  title: Bookstore API
+  version: 1.0.0
+  description: REST API for Bookstore system, including Users, Products, Bookings, and BookStore inventory.
+
+servers:
+  - url: http://localhost:5000/api
+
+paths:
+  # ===========================
+  # USERS ENDPOINTS
+  # ===========================
+  /users:
+    post:
+      summary: Create a new user
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Server error
+
+    get:
+      summary: Get all users
+      tags: [Users]
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+
+  /users/{id}:
+    get:
+      summary: Get a user by ID
+      tags: [Users]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '404':
+          description: User not found
+
+    put:
+      summary: Update an existing user
+      tags: [Users]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '200':
+          description: User updated
+        '404':
+          description: User not found
+
+    delete:
+      summary: Delete a user
+      tags: [Users]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: User deleted successfully }
+        '404': { description: User not found }
+
+  # ===========================
+  # PRODUCTS ENDPOINTS
+  # ===========================
+  /products:
+    get:
+      summary: Get all products
+      tags: [Products]
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductResponse'
+
+    post:
+      summary: Create a new product
+      tags: [Products]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCreatedResponse'
+        '400': { description: Invalid input }
+
+  /products/{id}:
+    get:
+      summary: Get product by ID
+      tags: [Products]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404': { description: Product not found }
+
+    put:
+      summary: Update a product
+      tags: [Products]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductUpdatedResponse'
+        '404': { description: Product not found }
+
+    delete:
+      summary: Delete a product
+      tags: [Products]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Product deleted }
+        '404': { description: Product not found }
+
+  # ===========================
+  # BOOKINGS ENDPOINTS
+  # ===========================
+  /bookings:
+    get:
+      summary: Get all bookings
+      tags: [Bookings]
+      responses:
+        '200':
+          description: List of all bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookingResponse'
+
+    post:
+      summary: Create a new booking
+      tags: [Bookings]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingInput'
+      responses:
+        '201':
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingCreatedResponse'
+        '400': { description: Invalid input }
+
+  /bookings/{id}:
+    get:
+      summary: Get a booking by ID
+      tags: [Bookings]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Booking details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingResponse'
+        '404': { description: Booking not found }
+
+    put:
+      summary: Update a booking
+      tags: [Bookings]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingInput'
+      responses:
+        '200':
+          description: Booking updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingUpdatedResponse'
+
+    delete:
+      summary: Delete a booking
+      tags: [Bookings]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Booking deleted }
+        '404': { description: Booking not found }
+
+  # ===========================
+  # BOOKSTORE ENDPOINTS
+  # ===========================
+  /bookstore:
+    get:
+      summary: Get all BookStore items
+      description: Retrieves all inventory items with related product data.
+      tags: [BookStore]
+      responses:
+        '200':
+          description: List of BookStore items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookStoreResponse'
+
+    post:
+      summary: Create a new BookStore item
+      tags: [BookStore]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookStoreInput'
+      responses:
+        '201':
+          description: BookStore item created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookStoreCreatedResponse'
+        '400': { description: Missing product_id }
+        '404': { description: Product not found }
+
+  /bookstore/{id}:
+    get:
+      summary: Get BookStore item by ID
+      tags: [BookStore]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: BookStore item details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookStoreResponse'
+        '404': { description: BookStore item not found }
+
+    put:
+      summary: Update BookStore item
+      tags: [BookStore]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookStoreUpdateInput'
+      responses:
+        '200':
+          description: BookStore item updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookStoreUpdatedResponse'
+
+    delete:
+      summary: Delete BookStore item
+      tags: [BookStore]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: BookStore item deleted }
+        '404': { description: Item not found }
+
+# ===========================
+# COMPONENTS / SCHEMAS
+# ===========================
+components:
+  schemas:
+    # --- USER SCHEMAS ---
+    UserInput:
+      type: object
+      required: [name, email, login, role_id]
+      properties:
+        name: { type: string, example: John Doe }
+        email: { type: string, format: email, example: john@example.com }
+        phone: { type: string, example: "+123456789" }
+        address: { type: string, example: "123 Main Street" }
+        login: { type: string, example: johndoe }
+        role_id: { type: integer, example: 1 }
+
+    UserResponse:
+      allOf:
+        - $ref: '#/components/schemas/UserInput'
+        - type: object
+          properties:
+            _id: { type: string, example: 64df7a2d8b1f4a23a56d3e2b }
+
+    # --- PRODUCT SCHEMAS ---
+    ProductInput:
+      type: object
+      required: [name, price]
+      properties:
+        name: { type: string, example: "The Great Gatsby" }
+        description: { type: string, example: "Classic novel by Fitzgerald" }
+        author: { type: string, example: "F. Scott Fitzgerald" }
+        price: { type: number, example: 19.99 }
+        image_path: { type: string, example: "/uploads/gatsby.jpg" }
+
+    ProductResponse:
+      allOf:
+        - $ref: '#/components/schemas/ProductInput'
+        - type: object
+          properties:
+            _id: { type: string, example: 64df8d2f1c2b4a56d98f1c1e }
+
+    ProductCreatedResponse:
+      type: object
+      properties:
+        message: { type: string, example: Product created successfully }
+        product: { $ref: '#/components/schemas/ProductResponse' }
+
+    ProductUpdatedResponse:
+      type: object
+      properties:
+        message: { type: string, example: Product updated successfully }
+        updatedProduct: { $ref: '#/components/schemas/ProductResponse' }
+
+    # --- BOOKING SCHEMAS ---
+    BookingInput:
+      type: object
+      required: [user_id, product_id, delivery_address, delivery_date, delivery_time, status_id, quantity]
+      properties:
+        user_id: { type: string, example: 64df7a2d8b1f4a23a56d3e2b }
+        product_id: { type: string, example: 64df8d2f1c2b4a56d98f1c1e }
+        delivery_address: { type: string, example: "123 Delivery Street" }
+        delivery_date: { type: string, example: "2025-11-10" }
+        delivery_time: { type: string, example: "19:00" }
+        status_id: { type: string, example: "PENDING" }
+        quantity: { type: integer, example: 2 }
+
+    BookingResponse:
+      allOf:
+        - $ref: '#/components/schemas/BookingInput'
+        - type: object
+          properties:
+            _id: { type: string, example: 64df8f2b1a3e5d42d89c7b9a }
+
+    BookingCreatedResponse:
+      type: object
+      properties:
+        message: { type: string, example: Booking created successfully }
+        booking: { $ref: '#/components/schemas/BookingResponse' }
+
+    BookingUpdatedResponse:
+      type: object
+      properties:
+        message: { type: string, example: Booking updated successfully }
+        booking: { $ref: '#/components/schemas/BookingResponse' }
+
+    # --- BOOKSTORE SCHEMAS ---
+    BookStoreInput:
+      type: object
+      required: [product_id]
+      properties:
+        product_id: { type: string, example: 64df8d2f1c2b4a56d98f1c1e }
+        available_qty: { type: integer, example: 100 }
+        booked_qty: { type: integer, example: 10 }
+        sold_qty: { type: integer, example: 5 }
+
+    BookStoreUpdateInput:
+      type: object
+      properties:
+        available_qty: { type: integer, example: 80 }
+        booked_qty: { type: integer, example: 5 }
+        sold_qty: { type: integer, example: 20 }
+
+    BookStoreResponse:
+      allOf:
+        - $ref: '#/components/schemas/BookStoreInput'
+        - type: object
+          properties:
+            _id: { type: string, example: 64df9b3a4c8d7e23a56e2b9d }
+            product_id:
+              type: object
+              properties:
+                name: { type: string }
+                description: { type: string }
+                author: { type: string }
+                price: { type: number }
+                image_path: { type: string }
+
+    BookStoreCreatedResponse:
+      type: object
+      properties:
+        message: { type: string, example: BookStore item created successfully }
+        bookStoreItem: { $ref: '#/components/schemas/BookStoreResponse' }
+
+    BookStoreUpdatedResponse:
+      type: object
+      properties:
+        message: { type: string, example: BookStore item updated successfully }
+        bookStoreItem: { $ref: '#/components/schemas/BookStoreResponse' }
