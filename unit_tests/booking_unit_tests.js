@@ -606,10 +606,6 @@ describe('Booking Controller', () => {
     });
   });
 
-
- 
-
-
     it('should return 400 if no bookingId', async () => {
       const req = { params: {}, body: {} }, res = mockRes();
       await bookingController.updateBooking(req, res);
@@ -650,7 +646,6 @@ describe('Booking Controller', () => {
     })
   );
 });
-
 
     it('should return 404 when status_id not found (name)', async () => {
       const req = { params: { id: '1' }, body: { status_id: 'pending' } }, res = mockRes();
@@ -764,8 +759,6 @@ it('should handle internal error gracefully', async () => {
     expect.objectContaining({ message: 'Error creating booking' })
   );
 });
-
-
   });
 
   // ---------- DELETE BOOKING ----------

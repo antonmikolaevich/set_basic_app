@@ -1,3 +1,4 @@
 module.exports = {
-  spec: "./crud_tests/**/*.js"
+  spec: "./crud_tests/**/*.js",
+  reporter: "mochawesome"
 };
