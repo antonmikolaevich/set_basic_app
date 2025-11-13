@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "api": "mocha",
-    "user_unit_tests": "jest --config jest.config.js --coverage"
+    "api_tests": "mocha",
+    "unit_tests": "jest --config ./jest.config.js --coverage",
+    "set_roles": "node ./scripts/seedRoles.js",
+    "set_booking_statuses": "node ./scripts/seedBookingStatuses.js",
+    "start_server": "node src/app.js"
   },
   "keywords": [],
   "author": "",

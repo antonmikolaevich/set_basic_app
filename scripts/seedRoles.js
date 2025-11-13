@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Role = require('./models/Role');
+const Role = require('../src/models/Role');
 require('dotenv').config(); // make sure path is correct
 
 mongoose.connect(process.env.MONGO_URI, {

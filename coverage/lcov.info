@@ -1,5 +1,5 @@
 TN:
-SF:controllers\bookStoreController.js
+SF:src\controllers\bookStoreController.js
 FN:5,(anonymous_0)
 FN:35,(anonymous_1)
 FN:45,(anonymous_2)
@@ -86,7 +86,7 @@ BRF:22
 BRH:21
 end_of_record
 TN:
-SF:controllers\bookingController.js
+SF:src\controllers\bookingController.js
 FN:8,(anonymous_0)
 FN:81,(anonymous_1)
 FN:94,(anonymous_2)
@@ -262,7 +262,7 @@ BRF:57
 BRH:57
 end_of_record
 TN:
-SF:controllers\productsControllers.js
+SF:src\controllers\productsControllers.js
 FN:4,(anonymous_0)
 FN:14,(anonymous_1)
 FN:25,(anonymous_2)
@@ -325,7 +325,7 @@ BRF:10
 BRH:10
 end_of_record
 TN:
-SF:controllers\userController.js
+SF:src\controllers\userController.js
 FN:5,(anonymous_0)
 FN:15,(anonymous_1)
 FN:32,(anonymous_2)
@@ -437,7 +437,7 @@ BRF:24
 BRH:24
 end_of_record
 TN:
-SF:models\BookStore.js
+SF:src\models\BookStore.js
 FNF:0
 FNH:0
 DA:1,1
@@ -449,7 +449,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:models\Booking.js
+SF:src\models\Booking.js
 FNF:0
 FNH:0
 DA:1,1
@@ -461,7 +461,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:models\BookingStatus.js
+SF:src\models\BookingStatus.js
 FNF:0
 FNH:0
 DA:1,1
@@ -473,7 +473,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:models\Products.js
+SF:src\models\Products.js
 FNF:0
 FNH:0
 DA:1,3
@@ -486,7 +486,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:models\Role.js
+SF:src\models\Role.js
 FNF:0
 FNH:0
 DA:1,1
@@ -498,7 +498,7 @@ BRF:0
 BRH:0
 end_of_record
 TN:
-SF:models\User.js
+SF:src\models\User.js
 FNF:0
 FNH:0
 DA:1,2

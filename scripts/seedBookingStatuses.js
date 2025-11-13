@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const BookingStatus = require('./models/BookingStatus'); // adjust path
+const BookingStatus = require('../src/models/BookingStatus'); // adjust path
 require('dotenv').config();
 
 mongoose.connect(process.env.MONGO_URI, {

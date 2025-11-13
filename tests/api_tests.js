@@ -1,6 +1,6 @@
-const {sendUserRequest} = require("../api_helpers/helpers");
+const {sendUserRequest} = require("./api_helpers/helpers");
 const { expect } = require("chai");
-const { newUser, newUserUpd, newProduct, newProductUpd, userBooking, productBooking, newBooking, newBookingUpd, bookstoreItem, bookstoreItemUpd} = require("../data/dataExample");
+const { newUser, newUserUpd, newProduct, newProductUpd, userBooking, productBooking, newBooking, newBookingUpd, bookstoreItem, bookstoreItemUpd} = require("../src/data/dataExample");
 let createdUserId;
 let createdProductId;
 let createdBookstoreItemId;
