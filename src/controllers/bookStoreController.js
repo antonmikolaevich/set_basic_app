@@ -31,12 +31,11 @@ exports.createBookStoreItem = async (req, res) => {
   }
 };
 
-// Get all BookStore items (with product details)
-// Get all BookStore items WITH pagination
+// Get all BookStore items
 exports.getBookStoreItems = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 3; // show 6 books per page
+    const limit = parseInt(req.query.limit) || 3;
 
     const totalStores = await BookStore.countDocuments();
 
@@ -60,7 +59,6 @@ exports.getBookStoreItems = async (req, res) => {
     });
   }
 };
-
 
 // Get a single BookStore item by ID (with product details)
 exports.getBookStoreItem = async (req, res) => {

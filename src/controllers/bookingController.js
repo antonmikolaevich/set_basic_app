@@ -80,15 +80,34 @@ exports.createBooking = async (req, res) => {
 // Get all bookings
 exports.getBookings = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
+
+    const totalBookings = await Booking.countDocuments();
+
     const bookings = await Booking.find()
-    .populate('user_id', 'name email')
-    .populate('product_id', 'name price')
-    .populate('status_id', 'name');
-    res.status(200).json(bookings);
+      .populate('user_id', 'name email')
+      .populate('product_id', 'name price')
+      .populate('status_id', 'name')
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalBookings / limit);
+
+    res.status(200).json({
+      bookings,
+      page,
+      totalPages
+    });
+
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving bookings', error });
+    res.status(500).json({
+      message: 'Error retrieving bookings',
+      error
+    });
   }
 };
+
 
 // Get single booking
 exports.getBooking = async (req, res) => {

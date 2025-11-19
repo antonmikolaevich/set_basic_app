@@ -5,23 +5,27 @@ const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fet
 const API_BASE = "http://localhost:5000/api";  // your API server
 
 router.get("/bookings", async (req, res) => {
-
   try {
-    const response = await fetch(`${API_BASE}/bookings`);
-    console.log("Fetching bookings from:", `${API_BASE}/bookings`);
+    const page = parseInt(req.query.page) || 1;
+    const limit = 3;
 
-    const bookings = await response.json();
-    console.log("Bookings API response:", bookings);
+    const response = await fetch(`${API_BASE}/bookings?page=${page}&limit=${limit}`);
+    const data = await response.json();
 
     res.render("pages/bookings", {
       title: "Bookings",
-      bookings
+      bookings: data.bookings,
+      currentPage: data.page,
+      totalPages: data.totalPages
     });
+
   } catch (error) {
     console.error(error);
     res.render("pages/bookings", {
       title: "Bookings",
       bookings: [],
+      currentPage: 1,
+      totalPages: 1,
       error: "Unable to load bookings"
     });
   }
