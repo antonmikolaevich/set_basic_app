@@ -17,7 +17,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // UI Routes
 app.use("/", require("./routes/uiProductsRoutes"));
-app.use("/", require("./routes/uiBookingsRoutes")); // ✅ bookings
+app.use("/", require("./routes/uiBookingsRoutes")); 
+app.use("/", require("./routes/uiStoreRoutes"));
+app.use("/", require("./routes/uiUsersRoutes"));
 
 const PORT = 4000;
 app.listen(PORT, () => console.log("UI running on port " + PORT));

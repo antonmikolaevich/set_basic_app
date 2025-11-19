@@ -1,0 +1,75 @@
+<section>
+  <h2 class="mb-4">Search Store Items</h2>
+
+  <form id="searchStoreForm" class="row g-3">
+    <div class="col-md-3">
+      <label class="form-label">Bookstore Item ID</label>
+      <input id="searchStoreId" class="form-control" placeholder="Enter Bookstore Item ID">
+    </div>
+
+    <div class="col-12">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+  </form>
+
+  <div id="searchStoreResult" class="mt-3"></div>
+</section>
+
+<hr>
+
+<section class="row mb-3">
+  <div class="col">
+    <h3>All Bookstore Items</h3>
+  </div>
+  <div class="col text-end">
+    <button class="btn btn-success" id="openCreateStoreItemBtn">Create New Bookstore Item</button>
+  </div>
+</section>
+
+<div class="row mt-4">
+  <% stores.forEach(store => { %>
+    <div class="col-md-4 mb-4">
+      <div class="card shadow-sm">
+
+        <% if (store.product_id?.image_path) { %>
+          <img src="<%= store.product_id.image_path %>" 
+               class="card-img-top" 
+               alt="<%= store.product_id.name %>">
+        <% } %>
+
+        <div class="card-body">
+          <p><strong>Bookstore item ID:</strong> <%= store._id %></p>
+
+          <p><strong>Product Name:</strong> <%= store.product_id?.name %></p>
+          <p><strong>Description:</strong> <%= store.product_id?.description %></p>
+          <p><strong>Author:</strong> <%= store.product_id?.author %></p>
+          <p><strong>Price:</strong> $<%= store.product_id?.price %></p>
+
+          <hr>
+
+          <p><strong>Available Qty:</strong> <%= store.available_qty %></p>
+          <p><strong>Booked Qty:</strong> <%= store.booked_qty %></p>
+          <p><strong>Sold Qty:</strong> <%= store.sold_qty %></p>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between">
+          <button
+  class="btn btn-primary edit-store-btn"
+  data-id="<%= store._id %>"
+  data-product_id="<%= store.product_id?._id %>"
+  data-available_qty="<%= store.available_qty %>"
+  data-booked_qty="<%= store.booked_qty %>"
+  data-sold_qty="<%= store.sold_qty %>"
+>
+  Edit
+</button>
+          <button class="btn btn-sm btn-danger delete-store-btn"
+                  data-id="<%= store._id %>">
+            Delete
+          </button>
+        </div>
+
+      </div>
+    </div>
+  <% }) %>
+</div>
