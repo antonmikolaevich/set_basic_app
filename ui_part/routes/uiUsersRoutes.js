@@ -8,22 +8,31 @@ const API_BASE = "http://localhost:5000/api";
 // GET all users
 router.get("/users", async (req, res) => {
   try {
-    const response = await fetch(`${API_BASE}/users`);
-    const users = await response.json();
+    const page = parseInt(req.query.page) || 1;
+    const limit = 3;
+
+    const response = await fetch(`${API_BASE}/users?page=${page}&limit=${limit}`);
+    const data = await response.json();
 
     res.render("pages/users", {
       title: "Users",
-      users
+      users: data.users,
+      currentPage: data.page,
+      totalPages: data.totalPages
     });
+
   } catch (err) {
     console.error(err);
     res.render("pages/users", {
       title: "Users",
       users: [],
+      currentPage: 1,
+      totalPages: 1,
       error: "Unable to load users"
     });
   }
 });
+
 
 router.post("/users/create", async (req, res) => {
   try {

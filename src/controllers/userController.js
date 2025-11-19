@@ -4,12 +4,32 @@ const Role = require('../models/Role');
 // Get all users
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().populate('role_id', 'name');// Exclude password field
-    res.status(200).json(users);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
+
+    const totalUsers = await User.countDocuments();
+
+    const users = await User.find()
+      .populate('role_id', 'name')
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    res.status(200).json({
+      users,
+      page,
+      totalPages
+    });
+
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching users', error });
+    res.status(500).json({
+      message: 'Error fetching users',
+      error
+    });
   }
 };
+
 
 // Get user by ID
 exports.getUserById = async (req, res) => {

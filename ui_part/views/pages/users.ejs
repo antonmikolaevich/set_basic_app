@@ -27,36 +27,79 @@
 </section>
 
 <div class="row mt-4">
-  <% users.forEach(user => { %>
-    <div class="col-md-4 mb-4">
-      <div class="card shadow-sm">
-        <div class="card-body">
-          <p><strong>User ID:</strong> <%= user._id %></p>
-          <p><strong>Name:</strong> <%= user.name %></p>
-          <p><strong>Email:</strong> <%= user.email %></p>
-          <p><strong>Phone:</strong> <%= user.phone || 'N/A' %></p>
-          <p><strong>Address:</strong> <%= user.address || 'N/A' %></p>
-          <p><strong>Login:</strong> <%= user.login %></p>
-        </div>
+  <% if (users && users.length > 0) { %>
+    <% users.forEach(user => { %>
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <p><strong>User ID:</strong> <%= user._id %></p>
+            <p><strong>Name:</strong> <%= user.name %></p>
+            <p><strong>Email:</strong> <%= user.email %></p>
+            <p><strong>Phone:</strong> <%= user.phone || 'N/A' %></p>
+            <p><strong>Address:</strong> <%= user.address || 'N/A' %></p>
+            <p><strong>Login:</strong> <%= user.login %></p>
+          </div>
 
-        <div class="card-footer d-flex justify-content-between">
-          <button
-  class="btn btn-primary edit-user-btn"
-  data-id="<%= user._id %>"
-  data-name="<%= user.name %>"
-  data-email="<%= user.email %>"
-  data-phone="<%= user.phone %>"
-  data-address="<%= user.address %>"
-  data-login="<%= user.login %>"
-  data-role_id="<%= user.role_id %>"
->
-  Edit
-</button>
-          <button class="btn btn-danger delete-user-btn" data-id="<%= user._id %>">
-  Delete
-</button>
+          <div class="card-footer d-flex justify-content-between">
+            <button
+              class="btn btn-primary edit-user-btn"
+              data-id="<%= user._id %>"
+              data-name="<%= user.name %>"
+              data-email="<%= user.email %>"
+              data-phone="<%= user.phone %>"
+              data-address="<%= user.address %>"
+              data-login="<%= user.login %>"
+              data-role_id="<%= user.role_id %>"
+            >
+              Edit
+            </button>
+
+            <button class="btn btn-danger delete-user-btn" data-id="<%= user._id %>">
+              Delete
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  <% }) %>
+    <% }) %>
+  <% } else { %>
+    <p>No users found.</p>
+  <% } %>
 </div>
+
+
+<% if (totalPages && totalPages > 1) { %>
+  <nav aria-label="Users pagination" class="mt-4">
+    <ul class="pagination justify-content-center">
+
+      <!-- Previous -->
+      <% if (currentPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="/users?page=<%= currentPage - 1 %>">Previous</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">Previous</span>
+        </li>
+      <% } %>
+
+      <!-- Page numbers -->
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+          <a class="page-link" href="/users?page=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+
+      <!-- Next -->
+      <% if (currentPage < totalPages) { %>
+        <li class="page-item">
+          <a class="page-link" href="/users?page=<%= currentPage + 1 %>">Next</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">Next</span>
+        </li>
+      <% } %>
+
+    </ul>
+  </nav>
+<% } %>
