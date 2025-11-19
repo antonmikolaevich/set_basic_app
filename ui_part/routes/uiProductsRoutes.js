@@ -35,14 +35,19 @@ router.get("/", async (req, res) => {
 
 // Products page route
 router.get("/products", async (req, res) => {
-  const response = await fetch(`${API_BASE}/products`);
-  const products = await response.json();
+  const page = parseInt(req.query.page) || 1;
+
+  const response = await fetch(`${API_BASE}/products?page=${page}`);
+  const data = await response.json();
 
   res.render("pages/home", {
     title: "Products",
-    products
+    products: data.products || [],
+    currentPage: data.currentPage || 1,
+    totalPages: data.totalPages || 1
   });
 });
+
 
 // Edit product item
 router.post("/products/:id/edit", async (req, res) => {
