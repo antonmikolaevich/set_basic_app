@@ -15,7 +15,18 @@ router.get("/", async (req, res) => {
   });
 });
 
-//Edit product item
+// Products page route
+router.get("/products", async (req, res) => {
+  const response = await fetch(`${API_BASE}/products`);
+  const products = await response.json();
+
+  res.render("pages/home", {
+    title: "Products",
+    products
+  });
+});
+
+// Edit product item
 router.post("/products/:id/edit", async (req, res) => {
   const productId = req.params.id;
 
@@ -27,11 +38,13 @@ router.post("/products/:id/edit", async (req, res) => {
 
   if (!response.ok) {
     console.log(await response.text());
-    return res.redirect("/?error=1");
+    return res.redirect(`/products?error=1&id=${productId}`);
   }
 
-  res.redirect("/?success=1");
+  // Include ID in redirect
+  res.redirect(`/products?success=1&id=${productId}`);
 });
+
 
 
 router.delete("/products/:id/delete", async (req, res) => {
@@ -49,18 +62,30 @@ router.delete("/products/:id/delete", async (req, res) => {
 });
 
 
+// Create new product
 router.post("/products/create", async (req, res) => {
-  const response = await fetch(`${API_BASE}/products`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(req.body)
-  });
+  try {
+    const response = await fetch(`${API_BASE}/products`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req.body)
+    });
 
-  if (!response.ok) {
-    return res.redirect("/?error=1");
+    if (!response.ok) {
+      console.log("Product creation failed:", await response.text());
+      return res.redirect("/products?error=1");
+    }
+
+    // Parse the API response to get the new product's ID
+    const createdProduct = await response.json();
+    const productId = createdProduct.product._id; // Make sure your API returns this
+
+    // Redirect including the product ID for the toast
+    return res.redirect(`/products?success=1&id=${productId}`);
+  } catch (error) {
+    console.error("Error creating product:", error);
+    return res.redirect("/products?error=1");
   }
-
-  return res.redirect("/?success=1");
 });
 
 
