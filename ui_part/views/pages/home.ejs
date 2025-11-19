@@ -24,7 +24,6 @@
     <button class="btn btn-success" id="openCreateProductBtn">Create New Product</button>
   </div>
 </section>
-       
 
 <div class="row mt-4">
   <% products.forEach(product => { %>
@@ -34,7 +33,7 @@
           Product Image
         </div>
         <div class="card-body">
-          <h5 class="fw-bold"><%= product.title %></h5>
+          <h5 class="fw-bold"><%= product.name %></h5>
           <p><strong>Product Id:</strong> <%= product._id %></p>
           <p><%= product.description %></p>
           <p><strong>Author:</strong> <%= product.author %></p>
@@ -42,22 +41,59 @@
         </div>
         <div class="card-footer d-flex justify-content-between">
           <a href="#"
-   class="btn btn-sm btn-primary edit-btn"
-   data-id="<%= product._id %>"
-   data-name="<%= product.name %>"
-   data-description="<%= product.description %>"
-   data-author="<%= product.author %>"
-   data-price="<%= product.price %>"
-   data-image="<%= product.image_path %>">
-  Edit
-</a>
-          <button type="button" 
-        class="btn btn-sm btn-danger delete-btn" 
-        data-id="<%= product._id %>">
-  Delete
-</button>
+            class="btn btn-sm btn-primary edit-btn"
+            data-id="<%= product._id %>"
+            data-name="<%= product.name %>"
+            data-description="<%= product.description %>"
+            data-author="<%= product.author %>"
+            data-price="<%= product.price %>"
+            data-image="<%= product.image_path %>">
+            Edit
+          </a>
+
+          <button 
+            type="button"
+            class="btn btn-sm btn-danger delete-btn"
+            data-id="<%= product._id %>">
+            Delete
+          </button>
         </div>
       </div>
     </div>
   <% }) %>
 </div>
+
+<!-- PAGINATION -->
+<% if (totalPages && totalPages > 1) { %>
+  <nav aria-label="Products pagination" class="mt-4">
+    <ul class="pagination justify-content-end">
+
+      <% if (currentPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="/?page=<%= currentPage - 1 %>">Previous</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">Previous</span>
+        </li>
+      <% } %>
+
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+          <a class="page-link" href="/?page=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+
+      <% if (currentPage < totalPages) { %>
+        <li class="page-item">
+          <a class="page-link" href="/?page=<%= currentPage + 1 %>">Next</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">Next</span>
+        </li>
+      <% } %>
+
+    </ul>
+  </nav>
+<% } %>

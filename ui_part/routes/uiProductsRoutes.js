@@ -6,14 +6,32 @@ const API_BASE = "http://localhost:5000/api";  // your API server
 
 // Homepage
 router.get("/", async (req, res) => {
-  const response = await fetch(`${API_BASE}/products`);
-  const products = await response.json();
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 3;
 
-  res.render("pages/home", {
-    title: "Manager Dashboard",
-    products
-  });
+    const response = await fetch(`${API_BASE}/products?page=${page}&limit=${limit}`);
+    const data = await response.json();
+
+    res.render("pages/home", {
+      title: "Manager Dashboard",
+      products: data.products,
+      currentPage: data.page,
+      totalPages: data.totalPages
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.render("pages/home", {
+      title: "Manager Dashboard",
+      products: [],
+      currentPage: 1,
+      totalPages: 1,
+      error: "Unable to load products"
+    });
+  }
 });
+
 
 // Products page route
 router.get("/products", async (req, res) => {
