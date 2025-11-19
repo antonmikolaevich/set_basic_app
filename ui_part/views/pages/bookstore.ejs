@@ -27,49 +27,96 @@
 </section>
 
 <div class="row mt-4">
-  <% stores.forEach(store => { %>
-    <div class="col-md-4 mb-4">
-      <div class="card shadow-sm">
+  <% if (stores && stores.length > 0) { %>
+    <% stores.forEach(store => { %>
+      <div class="col-md-4 mb-4">
+        <div class="card shadow-sm">
 
-        <% if (store.product_id?.image_path) { %>
-          <img src="<%= store.product_id.image_path %>" 
-               class="card-img-top" 
-               alt="<%= store.product_id.name %>">
-        <% } %>
+          <% if (store.product_id?.image_path) { %>
+            <img 
+              src="<%= store.product_id.image_path %>" 
+              class="card-img-top"
+              alt="<%= store.product_id.name %>"
+            >
+          <% } %>
 
-        <div class="card-body">
-          <p><strong>Bookstore item ID:</strong> <%= store._id %></p>
+          <div class="card-body">
+            <p><strong>Bookstore Item ID:</strong> <%= store._id %></p>
 
-          <p><strong>Product Name:</strong> <%= store.product_id?.name %></p>
-          <p><strong>Description:</strong> <%= store.product_id?.description %></p>
-          <p><strong>Author:</strong> <%= store.product_id?.author %></p>
-          <p><strong>Price:</strong> $<%= store.product_id?.price %></p>
+            <p><strong>Product Name:</strong> <%= store.product_id?.name %></p>
+            <p><strong>Description:</strong> <%= store.product_id?.description %></p>
+            <p><strong>Author:</strong> <%= store.product_id?.author %></p>
+            <p><strong>Price:</strong> $<%= store.product_id?.price %></p>
 
-          <hr>
+            <hr>
 
-          <p><strong>Available Qty:</strong> <%= store.available_qty %></p>
-          <p><strong>Booked Qty:</strong> <%= store.booked_qty %></p>
-          <p><strong>Sold Qty:</strong> <%= store.sold_qty %></p>
+            <p><strong>Available Qty:</strong> <%= store.available_qty %></p>
+            <p><strong>Booked Qty:</strong> <%= store.booked_qty %></p>
+            <p><strong>Sold Qty:</strong> <%= store.sold_qty %></p>
+          </div>
+
+          <div class="card-footer d-flex justify-content-between">
+            <button
+              class="btn btn-primary edit-store-btn"
+              data-id="<%= store._id %>"
+              data-product_id="<%= store.product_id?._id %>"
+              data-available_qty="<%= store.available_qty %>"
+              data-booked_qty="<%= store.booked_qty %>"
+              data-sold_qty="<%= store.sold_qty %>"
+            >
+              Edit
+            </button>
+
+            <button 
+              class="btn btn-danger delete-store-btn" 
+              data-id="<%= store._id %>"
+            >
+              Delete
+            </button>
+          </div>
+
         </div>
-
-        <div class="card-footer d-flex justify-content-between">
-          <button
-  class="btn btn-primary edit-store-btn"
-  data-id="<%= store._id %>"
-  data-product_id="<%= store.product_id?._id %>"
-  data-available_qty="<%= store.available_qty %>"
-  data-booked_qty="<%= store.booked_qty %>"
-  data-sold_qty="<%= store.sold_qty %>"
->
-  Edit
-</button>
-          <button class="btn btn-sm btn-danger delete-store-btn"
-                  data-id="<%= store._id %>">
-            Delete
-          </button>
-        </div>
-
       </div>
-    </div>
-  <% }) %>
+    <% }) %>
+  <% } else { %>
+    <p>No bookstore items found.</p>
+  <% } %>
 </div>
+
+<!-- PAGINATION -->
+<% if (totalPages && totalPages > 1) { %>
+  <nav aria-label="Bookstore pagination" class="mt-4">
+    <ul class="pagination justify-content-end">
+
+      <!-- Previous -->
+      <% if (currentPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="/bookstore?page=<%= currentPage - 1 %>">Previous</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">Previous</span>
+        </li>
+      <% } %>
+
+      <!-- Page numbers -->
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+          <a class="page-link" href="/bookstore?page=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+
+      <!-- Next -->
+      <% if (currentPage < totalPages) { %>
+        <li class="page-item">
+          <a class="page-link" href="/bookstore?page=<%= currentPage + 1 %>">Next</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">Next</span>
+        </li>
+      <% } %>
+
+    </ul>
+  </nav>
+<% } %>

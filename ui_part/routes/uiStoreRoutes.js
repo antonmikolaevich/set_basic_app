@@ -6,25 +6,31 @@ const API_BASE = "http://localhost:5000/api";  // your API server
 
 router.get("/bookstore", async (req, res) => {
   try {
-    const response = await fetch(`${API_BASE}/bookstore`);
-    console.log("Fetching bookstore items from:", `${API_BASE}/bookstore`);
+    const page = parseInt(req.query.page) || 1;
+    const limit = 3; // same as API
 
-    const stores = await response.json();
-    console.log("Bookstore API response:", stores);
+    const response = await fetch(`${API_BASE}/bookstore?page=${page}&limit=${limit}`);
+    const data = await response.json();
 
     res.render("pages/bookstore", {
       title: "Bookstore",
-      stores
+      stores: data.stores,
+      currentPage: data.page,
+      totalPages: data.totalPages
     });
+
   } catch (error) {
     console.error(error);
     res.render("pages/bookstore", {
       title: "Bookstore",
       stores: [],
+      currentPage: 1,
+      totalPages: 1,
       error: "Unable to load bookstore items"
     });
   }
 });
+
 
 
 router.post("/bookstore/create", async (req, res) => {
