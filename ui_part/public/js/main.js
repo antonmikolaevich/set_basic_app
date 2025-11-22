@@ -121,15 +121,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const deleteUserModal = new bootstrap.Modal(deleteUserModalEl);
   let userIdToDelete = null;
 
-  // Assign delete buttons
-  document.querySelectorAll(".delete-user-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      userIdToDelete = btn.dataset.id;
-      deleteUserModal.show();
-    });
+  // Delegated event listener for delete buttons
+  document.addEventListener("click", (e) => {
+    const deleteBtn = e.target.closest(".delete-user-btn");
+    if (!deleteBtn) return;
+
+    userIdToDelete = deleteBtn.dataset.id;
+    deleteUserModal.show();
   });
 
-  // Confirm delete button
+  // Confirm delete
   const confirmBtn = document.getElementById("confirmDeleteUserBtn");
   if (confirmBtn) {
     confirmBtn.addEventListener("click", async () => {
@@ -137,18 +138,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const response = await fetch(`/users/${userIdToDelete}/delete`, {
-          method: "DELETE"
+          method: "DELETE",
         });
 
         if (response.ok) {
-          // Remove the user card from DOM
-          const card = document.querySelector(`.delete-user-btn[data-id="${userIdToDelete}"]`)?.closest(".col-md-4");
+          const card = document.querySelector(
+            `.delete-user-btn[data-id="${userIdToDelete}"]`
+          )?.closest(".col-md-4");
+
           if (card) card.remove();
 
-          // Hide the modal
           deleteUserModal.hide();
-
-          // Show dynamic toast
           showToast(`User with id "${userIdToDelete}" deleted!`, true);
 
           userIdToDelete = null;
@@ -162,8 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
-
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -220,6 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
       resultDiv.innerHTML = `
         <div class="card p-3">
           <h5>${product.name}</h5>
+          <p>Product Id:${product._id}</p>
           <p>Author: ${product.author}</p>
           <p>Price: $${product.price}</p>
           <p>Description: ${product.description}</p>
@@ -257,19 +256,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-
-  //
-  // CREATE PRODUCT MODAL
-  //
-  const createProductBtn = document.getElementById("openCreateProductBtn");
-  const createProductModalEl = document.getElementById("createProductModal");
-  const createProductModal = new bootstrap.Modal(createProductModalEl);
-
-  if (createProductBtn) {
-    createProductBtn.addEventListener("click", () => {
-      createProductModal.show();
-    });
-  }
 
   //
   // CREATE BOOKING MODAL
