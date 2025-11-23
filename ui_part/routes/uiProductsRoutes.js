@@ -65,7 +65,7 @@ router.post("/products/:id/edit", async (req, res) => {
   }
 
   // Include ID in redirect
-  res.redirect(`/products?success=1&id=${productId}`);
+  res.redirect(`/products?updated=1&id=${productId}`);
 });
 
 

@@ -1,27 +1,57 @@
+//===============================================
+//=================PRODUCTS======================
+//===============================================
+//1.edit button click into Product card -> result - the modal window is opened
+//2.delete the Product item
+//3.creation of product - create Product toats
+//4.edit product - edit Product toasts
+// 5.search product by ID
+
+//1.edit button click into Product card -> result - the modal window is opened
+
 document.addEventListener("DOMContentLoaded", () => {
   const editButtons = document.querySelectorAll(".edit-btn");
-  const modal = new bootstrap.Modal(document.getElementById("editProductModal"));
+  const editModalEl = document.getElementById("editProductModal");
 
+  if (!editModalEl) return;
+
+  // Single modal instance
+  const modal = new bootstrap.Modal(editModalEl, {
+    backdrop: true,
+    keyboard: true,
+  });
+
+  // Fill form & show modal
   editButtons.forEach(btn => {
     btn.addEventListener("click", () => {
-
-      // Fill form fields
       document.getElementById("edit-id").value = btn.dataset.id;
       document.getElementById("edit-name").value = btn.dataset.name;
       document.getElementById("edit-description").value = btn.dataset.description;
       document.getElementById("edit-author").value = btn.dataset.author;
       document.getElementById("edit-price").value = btn.dataset.price;
-      document.getElementById("edit-image").value = btn.dataset.image;
+      document.getElementById("edit-image").value = btn.dataset.image_path || "";
 
-      // Set form action (your UI route, not API directly)
       document.getElementById("editProductForm").action = `/products/${btn.dataset.id}/edit`;
 
       modal.show();
     });
   });
+
+  // Optional: manually fix leftover backdrop
+  editModalEl.addEventListener("hidden.bs.modal", () => {
+    const backdrops = document.querySelectorAll(".modal-backdrop");
+    backdrops.forEach(b => b.remove());
+  });
 });
 
-//dleete product item
+
+//2.delete the Product item
+//2.1 assign the deleteProductModal, define the deleteProductButton, that after the click - deleteModal is opened
+//2.2 describe the action items after clicking ConfirmDeleteButton
+// I our delete response to the UI, deletining the card is only on UI part, no API call is made here 
+
+
+//delete product item - oopen the delete modal and after confirmation of deleting after clicking on confirmDeleteBtn
 document.addEventListener("DOMContentLoaded", () => {
   const deleteModalEl = document.getElementById("deleteConfirmModal");
   const deleteModal = new bootstrap.Modal(deleteModalEl);
@@ -67,7 +97,158 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-//delete bookstore item
+
+//3.creation of product - show modal after clicking Create Product button
+
+document.addEventListener("DOMContentLoaded", () => {
+  // -------------------------
+  // CREATE PRODUCT MODAL
+  // -------------------------
+  const createBtn = document.getElementById("openCreateProductBtn");
+  const createModalEl = document.getElementById("createProductModal");
+  const createModal = new bootstrap.Modal(createModalEl);
+
+  if (createBtn) {
+    createBtn.addEventListener("click", () => {
+      createModal.show();
+    });
+  }
+
+  // -------------------------
+  // SHOW TOAST BASED ON URL
+  // -------------------------
+  const urlParams = new URLSearchParams(window.location.search);
+  const productId = urlParams.get("id") || "";
+
+  if (urlParams.get("success") === "1") {
+    showToast(`Product with id "${productId}" created successfully!`, true);
+  }
+
+  if (urlParams.get("error") === "1") {
+    showToast(`Failed to create product with id "${productId}".`, false);
+  }
+});
+
+
+//4.edit product - show modal after clicking Edit button in Product card
+
+document.addEventListener("DOMContentLoaded", () => {
+  // -------------------------
+  // EDIT PRODUCT MODAL
+  // -------------------------
+  const editBtn = document.querySelectorAll(".edit-btn");
+  const editModalEl = document.getElementById("editProductModal");
+  const editModal = new bootstrap.Modal(editModalEl);
+
+  editBtn.forEach(btn => {
+  btn.addEventListener("click", () => {//go to the line 23-26
+    editModal.show();
+  });
+});
+
+  // -------------------------
+  // SHOW TOAST BASED ON URL
+  // -------------------------
+  const urlParams = new URLSearchParams(window.location.search);
+  const productId = urlParams.get("id") || "";
+
+
+  if (urlParams.get("error") === "1") {
+    showToast(`Failed to update product with id "${productId}".`, false);
+  }
+
+  if (urlParams.get("updated") === "1") {
+    showToast(`Product with id "${productId}" updated successfully!`, true);
+  }
+});
+
+
+// 5.search product by ID
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("searchForm");
+  const resultDiv = document.getElementById("searchResult");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = document.getElementById("searchId").value.trim();
+    if (!id) {
+      resultDiv.innerText = "Please enter a Product ID.";
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/products/${id}`); // <-- PORT 5000
+      if (!res.ok) throw new Error("Product not found");
+
+      const product = await res.json();
+      resultDiv.innerHTML = `
+        <div class="card p-3">
+          <h5>${product.name}</h5>
+          <p>Product Id:${product._id}</p>
+          <p>Author: ${product.author}</p>
+          <p>Price: $${product.price}</p>
+          <p>Description: ${product.description}</p>
+        </div>
+      `;
+    } catch (err) {
+      resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
+    }
+  });
+});
+
+//============================================================================
+//=================BOOKSTORE==================================================
+//============================================================================
+// 1.edit bookstore - edit button click into Bookstore card -> result - the modal window is opened
+// 2.delete bookstore item
+// 3. create bookstore item - create bookstore toasts
+// 4. edit bookstore - edit bookstore toasts
+// 5. search bookstore
+
+// 1.edit bookstore - edit button click into Bookstore card -> result - the modal window is opened
+
+document.addEventListener("DOMContentLoaded", () => {
+  const editStoreButtons = document.querySelectorAll(".edit-store-btn");
+  const editStoreModalEl = document.getElementById("editStoreItemModal");
+  const editStoreForm = document.getElementById("editStoreItemForm");
+
+  if (!editStoreModalEl || !editStoreForm) return;
+
+  // Initialize Bootstrap modal only once
+  const editStoreModal = new bootstrap.Modal(editStoreModalEl);
+
+  // Fill modal form and show when clicking edit buttons
+  editStoreButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.getElementById("edit-store-id").value = btn.dataset.id;
+      document.getElementById("edit-store-product-id").value = btn.dataset.product_id;
+      document.getElementById("edit-store-available").value = btn.dataset.available_qty;
+      document.getElementById("edit-store-booked").value = btn.dataset.booked_qty;
+      document.getElementById("edit-store-sold").value = btn.dataset.sold_qty;
+
+      editStoreForm.action = `/bookstore/${btn.dataset.id}/edit`;
+      editStoreModal.show();
+    });
+  });
+
+  // Explicitly attach click listeners to cancel/close buttons
+  const cancelButtons = editStoreModalEl.querySelectorAll('[data-bs-dismiss="modal"]');
+  cancelButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      editStoreModal.hide();
+    });
+  });
+
+  // Optional: hide modal when clicking backdrop or pressing ESC
+  editStoreModalEl.addEventListener('hidden.bs.modal', () => {
+    // cleanup if needed
+  });
+});
+
+
+// 2.delete bookstore item - open the delete modal and after confirmation of deleting after clicking on confirmDeleteBookstoreBtn
+
 document.addEventListener("DOMContentLoaded", () => {
   const deleteBookstoreModalEl = document.getElementById("deleteBookstoreModal");
   const deleteBookstoreModal = new bootstrap.Modal(deleteBookstoreModalEl);
@@ -113,7 +294,165 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-// Delete user
+// 3. create of bookstore item - show modal after clicking Create Bookstore Item button
+
+document.addEventListener("DOMContentLoaded", () => {
+  //
+  // CREATE BOOKSTORE MODAL
+  //
+  const createStoreBtn = document.getElementById("openCreateStoreItemBtn");
+  const createStoreModalEl = document.getElementById("createStoreItemModal");
+  const createStoreModal = createStoreModalEl ? new bootstrap.Modal(createStoreModalEl) : null;
+
+  if (createStoreBtn && createStoreModal) {
+    createStoreBtn.addEventListener("click", () => {
+      createStoreModal.show();
+    });
+  }
+//
+// BOOKSTORE TOASTS
+//
+ const urlParams = new URLSearchParams(window.location.search);
+const storeId = urlParams.get("id") || "";
+
+if (urlParams.get("storeSuccess") === "1") {
+  showToast(`Bookstore item with id "${storeId}" created successfully!`, true);
+}
+
+if (urlParams.get("storeError") === "1") {
+  showToast(`Failed to create bookstore item with id "${storeId}".`, false);
+}
+
+if (urlParams.get("storeUpdated") === "1") {
+  showToast(`Bookstore item with id "${storeId}" updated successfully!`, true);
+}
+});
+
+
+//4. edit bookstore - show modal after clicking Edit button in Bookstore card
+
+document.addEventListener("DOMContentLoaded", () => {
+  //
+  // CREATE BOOKSTORE MODAL
+  //
+  const editStoreBtn = document.querySelectorAll("edit-store-btn");
+  const editStoreModalEl = document.getElementById("editStoreItemModal");
+  const editStoreModal = editStoreModalEl ? new bootstrap.Modal(editStoreModalEl) : null;
+
+  editStoreBtn.forEach(btn => {
+  btn.addEventListener("click", () => {//go to the line 23-26
+    editStoreModal.show();
+  });
+});
+//
+// BOOKSTORE TOASTS
+//
+const urlParams = new URLSearchParams(window.location.search);
+const storeId = urlParams.get("id") || "";
+
+if (urlParams.get("storeError") === "1") {
+  showToast(`Failed to update bookstore item with id "${storeId}".`, false);
+}
+
+if (urlParams.get("storeUpdated") === "1") {
+  showToast(`Bookstore item with id "${storeId}" updated successfully!`, true);
+}
+});
+
+
+//5. search bookstore
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("searchStoreForm");
+  const resultDiv = document.getElementById("searchStoreResult");
+
+  if (!form) return; // Prevent errors on other pages
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const id = document.getElementById("searchStoreId").value.trim();
+
+    if (!id) {
+      resultDiv.innerHTML = `<div class="text-danger">Please enter a Store Item ID.</div>`;
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/bookstore/${id}`);  // <-- STORE API
+
+      if (!res.ok) throw new Error("Store item not found");
+
+      const store = await res.json();
+
+      resultDiv.innerHTML = `
+        <div class="card p-3 mt-3">
+
+          <p><strong>Store Item ID:</strong> ${store._id}</p>
+
+          <p><strong>Product Name:</strong> ${store.product_id?.name || "N/A"}</p>
+          <p><strong>Description:</strong> ${store.product_id?.description || "N/A"}</p>
+          <p><strong>Author:</strong> ${store.product_id?.author || "N/A"}</p>
+          <p><strong>Price:</strong> $${store.product_id?.price || "N/A"}</p>
+
+          <hr>
+
+          <p><strong>Available Qty:</strong> ${store.available_qty}</p>
+          <p><strong>Booked Qty:</strong> ${store.booked_qty}</p>
+          <p><strong>Sold Qty:</strong> ${store.sold_qty}</p>
+
+        </div>
+      `;
+    } catch (err) {
+      resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
+    }
+  });
+});
+
+
+//============================================================================
+//=================USERS=====================================================
+//============================================================================
+
+// 1.create user - create user modal
+// 2.delete user
+// 3.edit user - edit user modal
+// 4. edit user click - after the EditModal is opened, the fields are filled with user data
+// 5. search user by ID
+
+
+// 1 create user modal
+
+document.addEventListener("DOMContentLoaded", () => {
+   //
+  // CREATE USER MODAL
+  //
+  const createUserBtn = document.getElementById("openCreateUserBtn");
+  const createUserModalEl = document.getElementById("createUserModal");
+  const createUserModal = createUserModalEl ? new bootstrap.Modal(createUserModalEl) : null;
+
+  if (createUserBtn && createUserModal) {
+    createUserBtn.addEventListener("click", () => {
+      createUserModal.show();
+    });
+  }
+//users toasts
+//
+const urlParams = new URLSearchParams(window.location.search);
+const userId = urlParams.get("id") || "";
+// User creation toasts
+if (urlParams.get("userSuccess") === "1") {
+  showToast(`User with id "${userId}" created successfully!`, true);
+}
+
+if (urlParams.get("userError") === "1") {
+  showToast(`Failed to create user with id "${userId}".`, false);
+}
+});
+
+
+// 2. Delete user
+
 document.addEventListener("DOMContentLoaded", () => {
   const deleteUserModalEl = document.getElementById("deleteUserModal");
   if (!deleteUserModalEl) return;
@@ -164,19 +503,21 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+// 3. edit users - show modal after clicking Edit button in User card
+
 document.addEventListener("DOMContentLoaded", () => {
   // -------------------------
-  // CREATE PRODUCT MODAL
+  // EDIT USER MODAL
   // -------------------------
-  const createBtn = document.getElementById("openCreateProductBtn");
-  const createModalEl = document.getElementById("createProductModal");
-  const createModal = new bootstrap.Modal(createModalEl);
+  const editBtn = document.querySelectorAll("edit-user-btn");
+  const editModalEl = document.getElementById("editUserModal");
+  const editModal = new bootstrap.Modal(editModalEl);
 
-  if (createBtn) {
-    createBtn.addEventListener("click", () => {
-      createModal.show();
-    });
-  }
+  editBtn.forEach(btn => {
+  btn.addEventListener("click", () => {
+    editModal.show();
+  });
+});
 
   // -------------------------
   // SHOW TOAST BASED ON URL
@@ -184,44 +525,84 @@ document.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
   const productId = urlParams.get("id") || "";
 
-  if (urlParams.get("success") === "1") {
-    showToast(`Product with id "${productId}" created successfully!`, true);
+
+  if (urlParams.get("userError") === "1") {
+    showToast(`Failed to update user with id "${productId}".`, false);
   }
 
-  if (urlParams.get("error") === "1") {
-    showToast(`Failed to create product with id "${productId}".`, false);
-  }
-
-  if (urlParams.get("updated") === "1") {
-    showToast(`Product with id "${productId}" updated successfully!`, true);
+  if (urlParams.get("userUpdated") === "1") {
+    showToast(`User with id "${productId}" updated successfully!`, true);
   }
 });
 
 
+// 4. edit user
+
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("searchForm");
-  const resultDiv = document.getElementById("searchResult");
+  const editUserModalEl = document.getElementById("editUserModal");
+  if (!editUserModalEl) return;
+
+  const editUserModal = new bootstrap.Modal(editUserModalEl);
+
+  document.addEventListener("click", (e) => {
+    if (e.target.matches(".edit-user-btn")) {
+      e.preventDefault();
+
+      const btn = e.target;
+
+      // Fill modal inputs
+      document.getElementById("edit-user-id").value = btn.dataset.id;
+      document.getElementById("edit-user-name").value = btn.dataset.name || "";
+      document.getElementById("edit-user-email").value = btn.dataset.email || "";
+      document.getElementById("edit-user-phone").value = btn.dataset.phone || "";
+      document.getElementById("edit-user-address").value = btn.dataset.address || "";
+      document.getElementById("edit-user-login").value = btn.dataset.login || "";
+      document.getElementById("edit-user-role-id").value = btn.dataset.role_id || "";
+
+      // Set form action
+      document.getElementById("editUserForm").action = `/users/${btn.dataset.id}/edit`;
+
+      editUserModal.show();
+    }
+  });
+});
+
+
+// 5. search user
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("searchUserForm");
+  const resultDiv = document.getElementById("searchUserResult");
+
+  if (!form) return; // Prevent errors on other pages
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const id = document.getElementById("searchId").value.trim();
+
+    const id = document.getElementById("searchUserId").value.trim();
+
     if (!id) {
-      resultDiv.innerText = "Please enter a Product ID.";
+      resultDiv.innerHTML = `<div class="text-danger">Please enter a User ID.</div>`;
       return;
     }
 
     try {
-      const res = await fetch(`http://localhost:5000/api/products/${id}`); // <-- PORT 5000
-      if (!res.ok) throw new Error("Product not found");
+      const res = await fetch(`http://localhost:5000/api/users/${id}`); // <-- USER API
 
-      const product = await res.json();
+      if (!res.ok) throw new Error("User not found");
+
+      const user = await res.json();
+
       resultDiv.innerHTML = `
-        <div class="card p-3">
-          <h5>${product.name}</h5>
-          <p>Product Id:${product._id}</p>
-          <p>Author: ${product.author}</p>
-          <p>Price: $${product.price}</p>
-          <p>Description: ${product.description}</p>
+        <div class="card p-3 mt-3">
+
+          <p><strong>User ID:</strong> ${user._id}</p>
+          <p><strong>Name:</strong> ${user.name || "N/A"}</p>
+          <p><strong>Email:</strong> ${user.email || "N/A"}</p>
+          <p><strong>Phone:</strong> ${user.phone || "N/A"}</p>
+          <p><strong>Address:</strong> ${user.address || "N/A"}</p>
+          <p><strong>Login:</strong> ${user.login || "N/A"}</p>
+
         </div>
       `;
     } catch (err) {
@@ -230,33 +611,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+
+//============================================================================
+//=================BOOKINGS==================================================
+//============================================================================
+// 1.create booking - create booking modal
+// 2.edit booking - edit booking modal
+// 3. edit click - after the EditModal is opened, the fields are filled with booking data
+// 4.delete booking - delete booking modal
+// 5.search booking by ID
+
+
+// 1.create booking - create booking modal
+
 document.addEventListener("DOMContentLoaded", () => {
-   //
-  // CREATE USER MODAL
-  //
-  const createUserBtn = document.getElementById("openCreateUserBtn");
-  const createUserModalEl = document.getElementById("createUserModal");
-  const createUserModal = createUserModalEl ? new bootstrap.Modal(createUserModalEl) : null;
-
-  if (createUserBtn && createUserModal) {
-    createUserBtn.addEventListener("click", () => {
-      createUserModal.show();
-    });
-  }
-  //
-  // CREATE BOOKSTORE MODAL
-  //
-  const createStoreBtn = document.getElementById("openCreateStoreItemBtn");
-  const createStoreModalEl = document.getElementById("createStoreItemModal");
-  const createStoreModal = createStoreModalEl ? new bootstrap.Modal(createStoreModalEl) : null;
-
-  if (createStoreBtn && createStoreModal) {
-    createStoreBtn.addEventListener("click", () => {
-      createStoreModal.show();
-    });
-  }
-
-
   //
   // CREATE BOOKING MODAL
   //
@@ -287,42 +655,46 @@ document.addEventListener("DOMContentLoaded", () => {
   if (urlParams.get("bookingUpdated") === "1") {
     showToast(`Booking with id "${bookingId}" updated successfully!`, true);
   }
-//
-// STORE TOASTS
-//
-const storeId = urlParams.get("id") || "";
-
-if (urlParams.get("storeSuccess") === "1") {
-  showToast(`Bookstore item with id "${storeId}" created successfully!`, true);
-}
-
-if (urlParams.get("storeError") === "1") {
-  showToast(`Failed to create bookstore item with id "${storeId}".`, false);
-}
-
-if (urlParams.get("storeUpdated") === "1") {
-  showToast(`Bookstore item with id "${storeId}" updated successfully!`, true);
-}
-//
-//users toasts
-//
-const userId = urlParams.get("id") || "";
-// User creation toasts
-if (urlParams.get("userSuccess") === "1") {
-  showToast(`User with id "${userId}" created successfully!`, true);
-}
-
-if (urlParams.get("userError") === "1") {
-  showToast(`Failed to create user with id "${userId}".`, false);
-}
-
-// User update toast
-if (urlParams.get("userUpdated") === "1") {
-  showToast(`User with id "${userId}" updated successfully!`, true);
-}
 });
 
-//edit booking
+// 2. edit booking - edit booking modals
+
+document.addEventListener("DOMContentLoaded", () => {
+  //
+  // CREATE BOOKING MODAL
+  //
+  const editBookingBtn = document.getElementById("edit-booking-btn");
+  const editBookingModalEl = document.getElementById("editBookingModal");
+  const editBookingModal = new bootstrap.Modal(editBookingModalEl);
+
+   editBookingBtn.forEach(btn => {
+  btn.addEventListener("click", () => {//go to the line 23-26
+    editBookingModal.show();
+  });
+});
+
+  //
+  // SHOW TOASTS BASED ON URL
+  //
+  const urlParams = new URLSearchParams(window.location.search);
+  const bookingId = urlParams.get("id") || "";
+
+  if (urlParams.get("bookingSuccess") === "1") {
+    showToast(`Booking with id "${bookingId}" created successfully!`, true);
+  }
+
+  if (urlParams.get("bookingError") === "1") {
+    showToast(`Failed to create booking with id "${bookingId}".`, false);
+  }
+
+  if (urlParams.get("bookingUpdated") === "1") {
+    showToast(`Booking with id "${bookingId}" updated successfully!`, true);
+  }
+});
+
+
+// 3. edit booking - edit click and opening the modal with pre-filled data after clicking Edit button in Booking card
+
 document.addEventListener("DOMContentLoaded", () => {
   const editBookingModal = new bootstrap.Modal(document.getElementById("editBookingModal"));
 
@@ -346,6 +718,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+
+// 3. delete booking - delete booking modal
 
 document.addEventListener("DOMContentLoaded", () => {
 // -------------------------------
@@ -439,7 +814,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-//search booking
+// 5. search booking by Id
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("searchBookingForm");
   const resultDiv = document.getElementById("searchBookingResult");
@@ -475,156 +851,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-//search bookstore
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("searchStoreForm");
-  const resultDiv = document.getElementById("searchStoreResult");
 
-  if (!form) return; // Prevent errors on other pages
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const id = document.getElementById("searchStoreId").value.trim();
-
-    if (!id) {
-      resultDiv.innerHTML = `<div class="text-danger">Please enter a Store Item ID.</div>`;
-      return;
-    }
-
-    try {
-      const res = await fetch(`http://localhost:5000/api/bookstore/${id}`);  // <-- STORE API
-
-      if (!res.ok) throw new Error("Store item not found");
-
-      const store = await res.json();
-
-      resultDiv.innerHTML = `
-        <div class="card p-3 mt-3">
-
-          <p><strong>Store Item ID:</strong> ${store._id}</p>
-
-          <p><strong>Product Name:</strong> ${store.product_id?.name || "N/A"}</p>
-          <p><strong>Description:</strong> ${store.product_id?.description || "N/A"}</p>
-          <p><strong>Author:</strong> ${store.product_id?.author || "N/A"}</p>
-          <p><strong>Price:</strong> $${store.product_id?.price || "N/A"}</p>
-
-          <hr>
-
-          <p><strong>Available Qty:</strong> ${store.available_qty}</p>
-          <p><strong>Booked Qty:</strong> ${store.booked_qty}</p>
-          <p><strong>Sold Qty:</strong> ${store.sold_qty}</p>
-
-        </div>
-      `;
-    } catch (err) {
-      resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
-    }
-  });
-});
-
-//search user
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("searchUserForm");
-  const resultDiv = document.getElementById("searchUserResult");
-
-  if (!form) return; // Prevent errors on other pages
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const id = document.getElementById("searchUserId").value.trim();
-
-    if (!id) {
-      resultDiv.innerHTML = `<div class="text-danger">Please enter a User ID.</div>`;
-      return;
-    }
-
-    try {
-      const res = await fetch(`http://localhost:5000/api/users/${id}`); // <-- USER API
-
-      if (!res.ok) throw new Error("User not found");
-
-      const user = await res.json();
-
-      resultDiv.innerHTML = `
-        <div class="card p-3 mt-3">
-
-          <p><strong>User ID:</strong> ${user._id}</p>
-          <p><strong>Name:</strong> ${user.name || "N/A"}</p>
-          <p><strong>Email:</strong> ${user.email || "N/A"}</p>
-          <p><strong>Phone:</strong> ${user.phone || "N/A"}</p>
-          <p><strong>Address:</strong> ${user.address || "N/A"}</p>
-          <p><strong>Login:</strong> ${user.login || "N/A"}</p>
-
-        </div>
-      `;
-    } catch (err) {
-      resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
-    }
-  });
-});
-
-//edit bookstore
-document.addEventListener("DOMContentLoaded", () => {
-  const editStoreModalEl = document.getElementById("editStoreItemModal");
-  if (!editStoreModalEl) return;
-
-  const editStoreModal = new bootstrap.Modal(editStoreModalEl);
-
-  document.addEventListener("click", (e) => {
-    if (e.target.matches(".edit-store-btn")) {
-      e.preventDefault();
-
-      const btn = e.target;
-
-      // Fill modal inputs
-      document.getElementById("edit-store-id").value = btn.dataset.id;
-      document.getElementById("edit-store-product-id").value = btn.dataset.product_id;
-      document.getElementById("edit-store-available").value = btn.dataset.available_qty;
-      document.getElementById("edit-store-booked").value = btn.dataset.booked_qty;
-      document.getElementById("edit-store-sold").value = btn.dataset.sold_qty;
-
-      // Set form action
-      document.getElementById("editStoreItemForm").action =
-        `/bookstore/${btn.dataset.id}/edit`;
-
-      editStoreModal.show();
-    }
-  });
-});
-
-//edit user
-document.addEventListener("DOMContentLoaded", () => {
-  const editUserModalEl = document.getElementById("editUserModal");
-  if (!editUserModalEl) return;
-
-  const editUserModal = new bootstrap.Modal(editUserModalEl);
-
-  document.addEventListener("click", (e) => {
-    if (e.target.matches(".edit-user-btn")) {
-      e.preventDefault();
-
-      const btn = e.target;
-
-      // Fill modal inputs
-      document.getElementById("edit-user-id").value = btn.dataset.id;
-      document.getElementById("edit-user-name").value = btn.dataset.name || "";
-      document.getElementById("edit-user-email").value = btn.dataset.email || "";
-      document.getElementById("edit-user-phone").value = btn.dataset.phone || "";
-      document.getElementById("edit-user-address").value = btn.dataset.address || "";
-      document.getElementById("edit-user-login").value = btn.dataset.login || "";
-      document.getElementById("edit-user-role-id").value = btn.dataset.role_id || "";
-
-      // Set form action
-      document.getElementById("editUserForm").action = `/users/${btn.dataset.id}/edit`;
-
-      editUserModal.show();
-    }
-  });
-});
-
-
+//==============================================
+//=================TOAST FUNCTION=================
+// =============================================
 
 
 function showToast(message, isSuccess = true) {
