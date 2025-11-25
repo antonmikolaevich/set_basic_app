@@ -200,6 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
+    
 
     const id = document.getElementById("searchId").value.trim().toLowerCase();
     const name = document.getElementById("searchName").value.trim().toLowerCase();
@@ -207,10 +208,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const price = document.getElementById("searchPrice").value.trim();
 
     // select all product cards
-    const cards = document.querySelectorAll(".card.shadow-sm");
+    const cards = document.querySelectorAll(".card-wrapper");
     let hasResult = false;
 
-    cards.forEach(card => {
+    cards.forEach(wrapper => {
+      const card = wrapper.querySelector(".card");
       // Get data from the card
       const cardId = card.querySelector(".card-body p.text-muted")?.innerText.trim().toLowerCase() || "";
       const cardName = card.querySelector(".card-body h5")?.innerText.trim().toLowerCase() || "";
@@ -223,10 +225,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const matchPrice = !price || cardPrice.includes(price);
 
       if (matchId && matchName && matchAuthor && matchPrice) {
-        card.style.display = "block";
+        wrapper.style.display = "block";
         hasResult = true;
       } else {
-        card.style.display = "none";
+        wrapper.style.display = "none";
       }
     });
 
@@ -677,6 +679,48 @@ document.addEventListener("DOMContentLoaded", () => {
 // 5.search booking by ID
 
 
+// clicking APPROVE, REJECT or CLOSE
+
+document.addEventListener("DOMContentLoaded", () => {
+  const buttons = document.querySelectorAll(".card-footer button");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const bookingId = btn.dataset.id;       // data-id from button
+      const newStatus = btn.dataset.status;   // data-status from button
+
+      if (!bookingId || !newStatus) return;
+
+      try {
+        // Call your Express UI route that proxies to API
+        const response = await fetch(`/bookings/${bookingId}/status/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status_id: newStatus })
+        });
+
+        if (!response.ok) {
+          alert("Error updating status.");
+          return;
+        }
+
+        // Update UI immediately
+        const card = btn.closest(".card");
+        const statusRow = card.querySelector("ul.list-group li:nth-child(5) span");
+
+        if (statusRow) {
+          statusRow.textContent = newStatus;  // Show updated status
+        }
+
+      } catch (err) {
+        console.error(err);
+        alert("Failed to update booking status.");
+      }
+    });
+  });
+});
+
+
 // 1.create booking - create booking modal
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -871,40 +915,92 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 5. search booking by Id
 
+// document.addEventListener("DOMContentLoaded", () => {
+//   const form = document.getElementById("searchBookingForm");
+//   const resultDiv = document.getElementById("searchBookingResult");
+
+//   form.addEventListener("submit", async (e) => {
+//     e.preventDefault();
+//     const id = document.getElementById("searchBookingId").value.trim();
+
+//     if (!id) {
+//       resultDiv.innerText = "Please enter a Booking ID.";
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch(`http://localhost:5000/api/bookings/${id}`); // <-- BOOKINGS API
+//       if (!res.ok) throw new Error("Booking not found");
+
+//       const booking = await res.json();
+
+//       resultDiv.innerHTML = `
+//         <div class="card p-3">
+//           <p><strong>Booking ID:</strong> ${booking._id}</p>
+//           <p><strong>Product:</strong> ${booking.product_id.name}</p>
+//           <p><strong>Delivery Address:</strong> ${booking.delivery_address}</p>
+//           <p><strong>Delivery Time:</strong> ${booking.delivery_time}</p>
+//           <p><strong>Status:</strong> ${booking.status_id.name}</p>
+//           <p><strong>Quantity:</strong> ${booking.quantity}</p>
+//         </div>
+//       `;
+//     } catch (err) {
+//       resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
+//     }
+//   });
+// });
+
+
+// search booking on UI side
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("searchBookingForm");
-  const resultDiv = document.getElementById("searchBookingResult");
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const id = document.getElementById("searchBookingId").value.trim();
 
-    if (!id) {
-      resultDiv.innerText = "Please enter a Booking ID.";
-      return;
-    }
+    const productName = document.getElementById("searchProductName").value.trim().toLowerCase();
+    const userName = document.getElementById("searchUserName").value.trim().toLowerCase();
+    const date = document.getElementById("searchDate").value.trim().toLowerCase();
+    const address = document.getElementById("searchAddress").value.trim().toLowerCase();
+    const status = document.getElementById("searchStatus").value.trim().toLowerCase();
 
-    try {
-      const res = await fetch(`http://localhost:5000/api/bookings/${id}`); // <-- BOOKINGS API
-      if (!res.ok) throw new Error("Booking not found");
+    // select all product cards
+    
+    const cards = document.querySelectorAll("#bookingCards .card-wrapper");
+    let hasResult = false;
 
-      const booking = await res.json();
+    cards.forEach(wrapper => {
+      const card = wrapper.querySelector(".card");
+      // Get data from the card
+      const cardproductName = card.querySelector(".card-body h5")?.innerText.trim().toLowerCase() || "";
+      const carduserName = card.querySelectorAll(".list-group .ms-2")[0]?.innerText.trim().toLowerCase() || "";
+      const cardDate = card.querySelectorAll(".list-group .ms-2")[1]?.innerText.trim().toLowerCase() || "";
+      const cardAddress = card.querySelectorAll(".list-group .ms-2")[3]?.innerText.trim().toLowerCase() || "";
+      const cardStatus = card.querySelectorAll(".list-group .ms-2")[4]?.innerText.trim().toLowerCase() || "";
 
-      resultDiv.innerHTML = `
-        <div class="card p-3">
-          <p><strong>Booking ID:</strong> ${booking._id}</p>
-          <p><strong>Product:</strong> ${booking.product_id.name}</p>
-          <p><strong>Delivery Address:</strong> ${booking.delivery_address}</p>
-          <p><strong>Delivery Time:</strong> ${booking.delivery_time}</p>
-          <p><strong>Status:</strong> ${booking.status_id.name}</p>
-          <p><strong>Quantity:</strong> ${booking.quantity}</p>
-        </div>
-      `;
-    } catch (err) {
-      resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
+
+      const matchProductName = !productName || cardproductName.includes(productName);
+      const matchUserName = !userName || carduserName.includes(userName);
+      const matchDate = !date || cardDate.includes(date);
+      const matchAddress = !address || cardAddress.includes(address);
+      const matchStatus = !status || cardStatus.includes(status);
+
+      if (matchProductName && matchUserName && matchDate && matchAddress && matchStatus) {
+        wrapper.style.display = "block";
+        hasResult = true;
+      } else {
+        wrapper.style.display = "none";
+      }
+    });
+
+    if (!hasResult) {
+      alert("No products found.");
     }
   });
 });
+
+
 
 
 //==============================================

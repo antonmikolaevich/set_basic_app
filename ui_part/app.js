@@ -13,6 +13,7 @@ app.use(expressLayouts);
 app.use(express.static(path.join(__dirname, "public")));
 
 // Parse form data
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // UI Routes

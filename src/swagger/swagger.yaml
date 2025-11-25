@@ -260,6 +260,34 @@ paths:
               schema:
                 $ref: '#/components/schemas/BookingUpdatedResponse'
 
+  /bookings/{id}/status: 
+    put:
+      summary: Update booking status
+      tags: [Bookings]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status_id:
+                  type: string
+                  example: "COMPLETED"
+      responses:
+        '200':
+          description: Booking status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookingUpdatedResponse'
+        '404': { description: Booking not found }             
+
     delete:
       summary: Delete a booking
       tags: [Bookings]

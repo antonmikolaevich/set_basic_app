@@ -4,7 +4,7 @@ const bookingStatusSchema = new mongoose.Schema({
   name: { 
     type: String, 
     required: true, 
-    enum: ['SUBMITTED', 'REJECTED', 'APPROVED', 'CANCELLED', 'IN_DELIVERY'] 
+    enum: ['SUBMITTED', 'REJECTED', 'APPROVED', 'CANCELLED', 'IN_DELIVERY', 'CLOSED'] 
   }
 }, {
   timestamps: true

@@ -105,4 +105,40 @@ router.delete("/bookings/:id/delete", async (req, res) => {
 });
 
 
+router.post("/bookings/:id/status/", async (req, res) => {
+  const bookingId = req.params.id;
+  const { status_id } = req.body;
+
+  if (!bookingId || !status_id) {
+    return res.status(400).json({ message: "Booking ID and status_id are required" });
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/bookings/${bookingId}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status_id })
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      console.log(text);
+      return res.status(response.status).json({ message: "Failed to update status", error: text });
+    }
+
+    const updatedBooking = await response.json();
+
+    // Return JSON to frontend
+    res.status(200).json({
+      message: "Booking status updated successfully",
+      booking: updatedBooking.booking
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error updating status", error: err.message });
+  }
+});
+
+
 module.exports = router;

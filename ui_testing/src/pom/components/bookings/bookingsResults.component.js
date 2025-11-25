@@ -7,10 +7,6 @@ class BookingsResultsComponent extends BaseComponent {
 
   get title () {
     return this.rootEl.locator('h3');
-  } 
-
-  get createButton () {
-    return this.rootEl.locator('button#openCreateBookingBtn');
   }
 }
 
