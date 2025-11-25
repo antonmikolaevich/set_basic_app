@@ -8,7 +8,7 @@ const API_BASE = "http://localhost:5000/api";  // your API server
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 3;
+    const limit = 6;
 
     const response = await fetch(`${API_BASE}/products?page=${page}&limit=${limit}`);
     const data = await response.json();
@@ -36,8 +36,9 @@ router.get("/", async (req, res) => {
 // Products page route
 router.get("/products", async (req, res) => {
   const page = parseInt(req.query.page) || 1;
+  const limit = 6;
 
-  const response = await fetch(`${API_BASE}/products?page=${page}`);
+  const response = await fetch(`${API_BASE}/products?page=${page}&limit=${limit}`);
   const data = await response.json();
 
   res.render("pages/home", {

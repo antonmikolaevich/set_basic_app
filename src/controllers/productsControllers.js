@@ -4,7 +4,7 @@ const Product = require('../models/Products');
 exports.getProducts = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 3;
+    const limit = 6;
     const skip = (page - 1) * limit;
 
     const totalProducts = await Product.countDocuments();

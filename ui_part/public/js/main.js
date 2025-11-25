@@ -16,10 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!editModalEl) return;
 
   // Single modal instance
-  const modal = new bootstrap.Modal(editModalEl, {
-    backdrop: true,
-    keyboard: true,
-  });
+  const modal = new bootstrap.Modal(editModalEl, {backdrop: true,keyboard: true,});
 
   // Fill form & show modal
   editButtons.forEach(btn => {
@@ -165,37 +162,81 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 5.search product by ID
 
+// document.addEventListener("DOMContentLoaded", () => {
+//   const form = document.getElementById("searchForm");
+//   const resultDiv = document.getElementById("searchResult");
+
+//   form.addEventListener("submit", async (e) => {
+//     e.preventDefault(); // prevents the page from refreshing when the form is submitted. - for my understanding
+//     const id = document.getElementById("searchId").value.trim();
+//     if (!id) {
+//       resultDiv.innerText = "Please enter a Product ID.";
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch(`http://localhost:5000/api/products/${id}`); // <-- PORT 5000
+//       if (!res.ok) throw new Error("Product not found");
+
+//       const product = await res.json();
+//       resultDiv.innerHTML = `
+//         <div class="card p-3">
+//           <h5>${product.name}</h5>
+//           <p>Product Id:${product._id}</p>
+//           <p>Author: ${product.author}</p>
+//           <p>Price: $${product.price}</p>
+//           <p>Description: ${product.description}</p>
+//         </div>
+//       `;
+//     } catch (err) {
+//       resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
+//     }
+//   });
+// });
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("searchForm");
-  const resultDiv = document.getElementById("searchResult");
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const id = document.getElementById("searchId").value.trim();
-    if (!id) {
-      resultDiv.innerText = "Please enter a Product ID.";
-      return;
-    }
 
-    try {
-      const res = await fetch(`http://localhost:5000/api/products/${id}`); // <-- PORT 5000
-      if (!res.ok) throw new Error("Product not found");
+    const id = document.getElementById("searchId").value.trim().toLowerCase();
+    const name = document.getElementById("searchName").value.trim().toLowerCase();
+    const author = document.getElementById("searchAuthor").value.trim().toLowerCase();
+    const price = document.getElementById("searchPrice").value.trim();
 
-      const product = await res.json();
-      resultDiv.innerHTML = `
-        <div class="card p-3">
-          <h5>${product.name}</h5>
-          <p>Product Id:${product._id}</p>
-          <p>Author: ${product.author}</p>
-          <p>Price: $${product.price}</p>
-          <p>Description: ${product.description}</p>
-        </div>
-      `;
-    } catch (err) {
-      resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
+    // select all product cards
+    const cards = document.querySelectorAll(".card.shadow-sm");
+    let hasResult = false;
+
+    cards.forEach(card => {
+      // Get data from the card
+      const cardId = card.querySelector(".card-body p.text-muted")?.innerText.trim().toLowerCase() || "";
+      const cardName = card.querySelector(".card-body h5")?.innerText.trim().toLowerCase() || "";
+      const cardAuthor = card.querySelectorAll(".card-footer")[0]?.innerText.trim().toLowerCase() || "";
+      const cardPrice = card.querySelectorAll(".card-footer")[1]?.innerText.trim() || "";
+
+      const matchId = !id || cardId.includes(id);
+      const matchName = !name || cardName.includes(name);
+      const matchAuthor = !author || cardAuthor.includes(author);
+      const matchPrice = !price || cardPrice.includes(price);
+
+      if (matchId && matchName && matchAuthor && matchPrice) {
+        card.style.display = "block";
+        hasResult = true;
+      } else {
+        card.style.display = "none";
+      }
+    });
+
+    if (!hasResult) {
+      alert("No products found.");
     }
   });
 });
+
+
 
 //============================================================================
 //=================BOOKSTORE==================================================
@@ -506,33 +547,47 @@ document.addEventListener("DOMContentLoaded", () => {
 // 3. edit users - show modal after clicking Edit button in User card
 
 document.addEventListener("DOMContentLoaded", () => {
-  // -------------------------
-  // EDIT USER MODAL
-  // -------------------------
-  const editBtn = document.querySelectorAll("edit-user-btn");
+// -------------------------
+// EDIT USER MODAL
+// -------------------------
+  const editBtns = document.querySelectorAll(".edit-user-btn");
   const editModalEl = document.getElementById("editUserModal");
   const editModal = new bootstrap.Modal(editModalEl);
 
-  editBtn.forEach(btn => {
-  btn.addEventListener("click", () => {
+// Open modal on button click
+  editBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
     editModal.show();
-  });
+});
 });
 
-  // -------------------------
-  // SHOW TOAST BASED ON URL
-  // -------------------------
-  const urlParams = new URLSearchParams(window.location.search);
-  const productId = urlParams.get("id") || "";
+// Ensure modal closes properly on cancel/close buttons
+  const modalCloseBtns = editModalEl.querySelectorAll('[data-bs-dismiss="modal"]');
+  modalCloseBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+  editModal.hide();
+});
+});
 
+// Optional: hide modal if clicking outside or pressing ESC is causing issues
+  editModalEl.addEventListener('hidden.bs.modal', () => {
+// Clear form fields if needed
+  document.getElementById("editUserForm").reset();
+});
 
-  if (urlParams.get("userError") === "1") {
-    showToast(`Failed to update user with id "${productId}".`, false);
-  }
+// -------------------------
+// SHOW TOAST BASED ON URL
+// -------------------------
+const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get("id") || "";
 
-  if (urlParams.get("userUpdated") === "1") {
-    showToast(`User with id "${productId}" updated successfully!`, true);
-  }
+if (urlParams.get("userError") === "1") {
+showToast(`Failed to update user with id "${productId}".`, false);
+}
+
+if (urlParams.get("userUpdated") === "1") {
+showToast(`User with id "${productId}" updated successfully!`, true);
+}
 });
 
 
