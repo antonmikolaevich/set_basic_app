@@ -6,6 +6,8 @@ const EditBookstoreComponent = require('../components/bookstore/bookstoreEdit.co
 const BookstoreDeleteComponent = require('../components/bookstore/bookstoreDelete.component');
 const SearchBookstoreResultComponent = require('../components/bookstore/bookstoreSearchResult.component');
 const BookstoreCreateCardComponent = require('../components/bookstore/bookstoreCreateCard.component');
+const BookstoreButtonsComponent = require('../components/bookstore/bookstoreButtons.component');
+const ActiveBookstoreComponent = require('../components/bookstore/activeBookstore.component');
 const BasePage = require('./base.page');
 
 class BookstorePage extends BasePage {
@@ -20,6 +22,8 @@ class BookstorePage extends BasePage {
     this.bookstoreCard = new BookstoreCardComponent(page); 
     this.searchBookstoreResult = new SearchBookstoreResultComponent(page);
     this.createBookstoreForm = new BookstoreCreateCardComponent(page);
+    this.bookstoreButtons = new BookstoreButtonsComponent(page);
+    this.activeBookstore = new ActiveBookstoreComponent(page);
   }
 
     getBookstoresCard(index) {

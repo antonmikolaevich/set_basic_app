@@ -14,15 +14,15 @@ class ProductsCardComponent extends BaseComponent {
   }
   
   get description () {
-    return this.rootEl.locator('p:nth-child(3)');
+    return this.rootEl.locator('.ms-3 p.mb-2');
   }
 
   get author () {
-    return this.rootEl.locator('p:nth-child(4)');
+    return this.rootEl.locator('.card-footer:nth-child(3)');
   }
 
   get price () {
-    return this.rootEl.locator('p:nth-child(5)');
+    return this.rootEl.locator('.card-footer:nth-child(4)');
   }
 
   get editBtn () {

@@ -9,8 +9,20 @@ class ProductsSearchComponent extends BaseComponent {
     return this.rootEl.locator('h2');
   }
 
-  get searchInput () {
-    return this.rootEl.locator('input#searchId');
+  get productId () {
+    return this.rootEl.locator('#searchId');
+  }
+
+  get productName () {
+    return this.rootEl.locator('##searchName');
+  }
+
+  get author(){
+    return this.rootEl.locator('#searchAuthor');
+  }
+
+  get price (){
+    return this.rootEl.locator('#searchPrice'); 
   }
   
   get searchButton () {

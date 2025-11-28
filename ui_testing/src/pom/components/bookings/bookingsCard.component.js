@@ -2,47 +2,47 @@ const BaseComponent = require("../../common/base.component");
 
 class BookingsCardComponent extends BaseComponent {
   constructor(page, index){
-    super(`div.row.mt-4 div.col-md-4:nth-child(${index})`, page);
-  }
-
-  get id () {
-    return this.rootEl.locator('p:nth-child(1)');
+    super(`#bookingCards div.card-wrapper:nth-child(${index})`, page);
   }
 
   get productName () {
-    return this.rootEl.locator('p:nth-child(2)');
+    return this.rootEl.locator('.card-body h5');
+  }
+
+  get productId () {
+    return this.rootEl.locator('.card-body p');
   }
   
   get userName () {
-    return this.rootEl.locator('p:nth-child(3)');
+    return this.rootEl.locator('.list-group.list-group-flush .list-group-item:nth-child(1)');
   }
 
-  get deliveryAddress () {
-    return this.rootEl.locator('p:nth-child(4)');
+  get deliveryDate () {
+    return this.rootEl.locator('.list-group.list-group-flush .list-group-item:nth-child(2)');
   }
 
   get deliveryTime () {
-    return this.rootEl.locator('p:nth-child(5)');
+    return this.rootEl.locator('.list-group.list-group-flush .list-group-item:nth-child(3)');
+  }
+
+  get deliveryAddress () {
+    return this.rootEl.locator('.list-group.list-group-flush .list-group-item:nth-child(4)');
   }
 
   get status () {
-    return this.rootEl.locator('p:nth-child(6)');
+    return this.rootEl.locator('.list-group.list-group-flush .list-group-item:nth-child(5)');
   }
 
-  get quantity () {
-    return this.rootEl.locator('p:nth-child(7)');
+  get approveButton () {
+    return this.rootEl.locator('button[data-status="APPROVED"]');
   }
 
-  get editBtn () {
-    return this.rootEl.locator('button.edit-booking-btn');
+  get rejectButton () {
+    return this.rootEl.locator('button[data-status="REJECTED"]')
   }
 
-  get deleteBtn () {
-    return this.rootEl.locator('button.delete-booking-btn')
-  }
-
-  async getBookingsCount() {
-    return await this.page.locator('div.card').count();
+  get closeButton (){
+    return this.rootEl.locator('button[data-status="CLOSED"]')
   }
 
 }

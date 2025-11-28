@@ -2,24 +2,33 @@ const BaseComponent = require("../../common/base.component");
 
 class UserSearchComponent extends BaseComponent {
   constructor(page){
-    super('section:nth-child(1)', page);
+    super('#searchUserForm', page);
   }
 
-  get title () {
-    return this.rootEl.locator('h2');
+  get userName () {
+    return this.rootEl.locator('#searchUserName');
   }
 
-  get searchInput () {
-    return this.rootEl.locator('input#searchUserId');
+  get userId () {
+    return this.rootEl.locator('#searchUserId');
   }
-  
+
+  get login () {
+    return this.rootEl.locator('#searchUserLogin');
+  }
+
+  get email () {
+    return this.rootEl.locator('#searchUserEmail');
+  }
+
+  get address () {
+    return this.rootEl.locator('#searchAddress');
+  }
+
   get searchButton () {
-    return this.rootEl.locator('button.btn-primary');
+    return this.rootEl.locator('button[type="submit"]');
   }
 
-  get errorMessage(){
-    return this.rootEl.locator('div.text-danger');
-  }
 
 }
 

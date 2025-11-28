@@ -6,6 +6,8 @@ const EditProductComponent = require('../components/products/productEdit.compone
 const DeleteProductComponent = require('../components/products/productDelete.component');
 const SearchProductsResultComponent = require('../components/products/productSearchResult.component');
 const ProductCreateCardComponent = require('../components/products/productCreateCard.component');
+const ProductButtonsComponent = require('../components/products/productButtons.component');
+const ActiveProductComponent = require('../components/products/activeProduct.component');
 const BasePage = require('./base.page');
 
 class ProductsPage extends BasePage {
@@ -20,6 +22,8 @@ class ProductsPage extends BasePage {
     this.productCard = new ProductsCardComponent(page); 
     this.searchProductResult = new SearchProductsResultComponent(page);
     this.createProductForm = new ProductCreateCardComponent(page);
+    this.productButtons = new ProductButtonsComponent(page);
+    this.activeProduct = new ActiveProductComponent(page);
   }
 
     getProductsCard(index) {

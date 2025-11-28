@@ -5,20 +5,36 @@ class BookstoreSearchComponent extends BaseComponent {
     super('section:nth-child(1)', page);
   }
 
-  get title () {
-    return this.rootEl.locator('h2');
-  }
-
-  get searchInput () {
-    return this.rootEl.locator('input#searchStoreId');
+  get productName () {
+    return this.rootEl.locator('#searchProductName');
   }
   
+  get productId () {
+    return this.rootEl.locator('#searchProductId');
+  }
+
+  get author (){
+    return this.rootEl.locator('#searchAuthor');
+  }
+
+  get available_qty(){
+    return this.rootEl.locator('#searchAvailableQty');
+  }
+
+  get booked_qty(){
+    return this.rootEl.locator('#searchBookedQty');
+  }
+
+  get delivered_qty(){
+    return this.rootEl.locator('#searchDeliveredQty');
+  }
+
   get searchButton () {
     return this.rootEl.locator('button.btn-primary');
   }
 
   get errorMessage(){
-    return this.rootEl.locator('div.text-danger');
+    return this.rootEl.locator('div.alert.alert-warning');
   }
 
 }

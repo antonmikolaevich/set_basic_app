@@ -29,6 +29,10 @@ class SearchUserResultComponent extends BaseComponent {
         return this.rootEl.locator('p:nth-child(6)');
     }
 
+    get alert(){
+        return this.rootEl.locator('div.alert.alert-warning');
+    }
+
 }
 
 module.exports = SearchUserResultComponent;

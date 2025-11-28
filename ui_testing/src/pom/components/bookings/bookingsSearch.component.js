@@ -5,14 +5,27 @@ class BookingsSearchComponent extends BaseComponent {
     super('section:nth-child(1)', page);
   }
 
-  get title () {
-    return this.rootEl.locator('h2');
+  get userName () {
+    return this.rootEl.locator('#searchUserName');
   }
 
-  get searchInput () {
-    return this.rootEl.locator('input#searchBookingId');
+  get productName () {
+    return this.rootEl.locator('#searchProductName');
+  }
+
+  get date (){
+    return this.rootEl.locator('searchDate') 
   }
   
+  get address (){
+    return this.rootEl.locator('#searchAddress')
+  }
+
+  get status (){
+    return this.rootEl.locator('#searchStatus')
+  }
+
+
   get searchButton () {
     return this.rootEl.locator('button.btn-primary');
   }

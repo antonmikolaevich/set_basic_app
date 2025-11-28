@@ -2,48 +2,27 @@ const BaseComponent = require("../../common/base.component");
 
 class BookstoreCardComponent extends BaseComponent {
   constructor(page, index){
-    super(`div.row.mt-4 div.col-md-4:nth-child(${index})`, page);
+    super(`#storeTableBody tr:nth-child(${index})`, page);
   }
 
-  get bookstoreItemId () {
-    return this.rootEl.locator('p:nth-child(1)');
+  get id () {
+    return this.rootEl.locator('td:nth-child(1)');
   }
 
   get productName () {
-    return this.rootEl.locator('p:nth-child(2)');
+    return this.rootEl.locator('td:nth-child(2)');
   }
   
-  get description () {
-    return this.rootEl.locator('p:nth-child(3)');
+  get available_qty () {
+    return this.rootEl.locator('td:nth-child(3)');
   }
 
-  get author () {
-    return this.rootEl.locator('p:nth-child(4)');
+  get booked_qty () {
+    return this.rootEl.locator('td:nth-child(4)');
   }
 
-  get price () {
-    return this.rootEl.locator('p:nth-child(5)');
-  }
-
-  get availableQuantity () {
-    return this.rootEl.locator('p:nth-child(7)');
-  }
-
-  get bookedQuantity () {
-    return this.rootEl.locator('p:nth-child(8)');
-  }
-
-  get soldQuantity () {
-    return this.rootEl.locator('p:nth-child(9)');
-  }
-
-  get editBtn () {
-    return this.rootEl.locator('button.edit-store-btn');
-  }
-
-
-  get deleteBtn () {
-    return this.rootEl.locator('button.delete-store-btn')
+  get delivered_qty () {
+    return this.rootEl.locator('td:nth-child(5)');
   }
 
   async getBookstoresCount() {

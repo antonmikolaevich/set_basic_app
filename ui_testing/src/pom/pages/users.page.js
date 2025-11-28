@@ -6,6 +6,8 @@ const EditUserComponent = require('../components/users/userEdit.component');
 const DeleteUserComponent = require('../common/delete.component');
 const SearchUserResultComponent = require('../components/users/searchUserResult.component');
 const UserCreateCardComponent = require('../components/users/userCreateCard.component');
+const UsersButtonsComponent = require('../components/users/usersbuttons.component');
+const ActiveUsersComponent = require('../components/users/activeUsers.component');
 const BasePage = require('./base.page');
 
 class UserPage extends BasePage {
@@ -20,6 +22,8 @@ class UserPage extends BasePage {
     this.userCard = new UsersCardComponent(page); 
     this.searchUserResult = new SearchUserResultComponent(page);
     this.createUserForm = new UserCreateCardComponent(page);
+    this.usersButtons = new UsersButtonsComponent(page);
+    this.activeRows = new ActiveUsersComponent(page);
   }
 
     getUserCard(index) {

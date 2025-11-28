@@ -6,6 +6,8 @@ const EditBookingsComponent = require('../components/bookings/bookingsEdit.compo
 const BookingsDeleteComponent = require('../components/bookings/bookingsDelete.component');
 const SearchBookingsResultComponent = require('../components/bookings/bookingsSearchResult.component');
 const BookingsCreateCardComponent = require('../components/bookings/bookingsCreateCard.component');
+const BookingsButtonsComponent = require('../components/bookings/bookingsButtons.component');
+const ActiveBookingComponent = require('../components/bookings/activeBooking.component');
 const BasePage = require('./base.page');
 
 class BookingsPage extends BasePage {
@@ -20,6 +22,8 @@ class BookingsPage extends BasePage {
     this.bookingsCard = new BookingsCardComponent(page); 
     this.searchBookingResult = new SearchBookingsResultComponent(page);
     this.createBookingForm = new BookingsCreateCardComponent(page);
+    this.bookingsButtons = new BookingsButtonsComponent(page);
+    this.activeBooking = new ActiveBookingComponent(page);
   }
 
     getBookingsCard(index) {
