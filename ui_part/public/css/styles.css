@@ -1,0 +1,19 @@
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #000000
+}
+
+.table tr td {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-family: 'Arial', sans-serif;
+}
+
+.row.mb-3 h3 {
+  font-family: 'Arial', sans-serif;
+}
+
+.card-body h5 {
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+}

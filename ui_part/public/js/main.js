@@ -405,52 +405,257 @@ if (urlParams.get("storeUpdated") === "1") {
 
 //5. search bookstore
 
+// document.addEventListener("DOMContentLoaded", () => {
+//   const form = document.getElementById("searchStoreForm");
+//   const resultDiv = document.getElementById("searchStoreResult");
+
+//   if (!form) return; // Prevent errors on other pages
+
+//   form.addEventListener("submit", async (e) => {
+//     e.preventDefault();
+
+//     const id = document.getElementById("searchStoreId").value.trim();
+
+//     if (!id) {
+//       resultDiv.innerHTML = `<div class="text-danger">Please enter a Store Item ID.</div>`;
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch(`http://localhost:5000/api/bookstore/${id}`);  // <-- STORE API
+
+//       if (!res.ok) throw new Error("Store item not found");
+
+//       const store = await res.json();
+
+//       resultDiv.innerHTML = `
+//         <div class="card p-3 mt-3">
+
+//           <p><strong>Store Item ID:</strong> ${store._id}</p>
+
+//           <p><strong>Product Name:</strong> ${store.product_id?.name || "N/A"}</p>
+//           <p><strong>Description:</strong> ${store.product_id?.description || "N/A"}</p>
+//           <p><strong>Author:</strong> ${store.product_id?.author || "N/A"}</p>
+//           <p><strong>Price:</strong> $${store.product_id?.price || "N/A"}</p>
+
+//           <hr>
+
+//           <p><strong>Available Qty:</strong> ${store.available_qty}</p>
+//           <p><strong>Booked Qty:</strong> ${store.booked_qty}</p>
+//           <p><strong>Sold Qty:</strong> ${store.sold_qty}</p>
+
+//         </div>
+//       `;
+//     } catch (err) {
+//       resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
+//     }
+//   });
+// });
+
+
+
+
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("searchStoreForm");
-  const resultDiv = document.getElementById("searchStoreResult");
+  const form = document.getElementById("searchBookingForm");
 
-  if (!form) return; // Prevent errors on other pages
-
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const id = document.getElementById("searchStoreId").value.trim();
+    const userName = document.getElementById("searchUserName").value.trim().toLowerCase();
+    const productName = document.getElementById("searchProductName").value.trim().toLowerCase();
+    const bookingDate = document.getElementById("searchDate").value.trim().toLowerCase();
+    const bookingAddress = document.getElementById("searchAddress").value.trim().toLowerCase();
+    const bookingStatus = document.getElementById("searchStatus").value.trim().toLowerCase();
+  
+    // select all product cards
+    
+    const cards = document.querySelectorAll(".card-wrapper");
+    let hasResult = false;
 
-    if (!id) {
-      resultDiv.innerHTML = `<div class="text-danger">Please enter a Store Item ID.</div>`;
-      return;
-    }
+    cards.forEach(wrapper => {
+      const card = wrapper.querySelector(".card");
+      // Get data from the card
+      const cardUserName= card.querySelectorAll(".list-group-item .ms-1")[0]?.innerText.trim().toLowerCase() || "";
+      const cardProductName = card.querySelector(".card-body h5.mb-1")?.innerText.trim().toLowerCase() || "";
+      const cardDate = card.querySelectorAll(".list-group-item .ms-1")[1]?.innerText.trim().toLowerCase() || "";
+      const cardAddress = card.querySelectorAll(".list-group-item .ms-1")[3]?.innerText.trim().toLowerCase() || "";
+      const cardStatus = card.querySelectorAll(".list-group-item .ms-1")[4]?.innerText.trim().toLowerCase() || "";
 
-    try {
-      const res = await fetch(`http://localhost:5000/api/bookstore/${id}`);  // <-- STORE API
+      const matchUserName = !userName || cardUserName.includes(userName);
+      const matchProductName = !productName || cardProductName.includes(productName);
+      const matchDate = !bookingDate || cardDate.includes(bookingDate);
+      const matchAddress = !bookingAddress || cardAddress.includes(bookingAddress);
+      const matchStatus = !bookingStatus || cardStatus.includes(bookingStatus);
+      
+      if (matchUserName && matchProductName && matchDate && matchAddress && matchStatus) {
+        wrapper.style.display = "block";
+        hasResult = true;
+      } else {
+        wrapper.style.display = "none";
+      }
+    });
 
-      if (!res.ok) throw new Error("Store item not found");
-
-      const store = await res.json();
-
-      resultDiv.innerHTML = `
-        <div class="card p-3 mt-3">
-
-          <p><strong>Store Item ID:</strong> ${store._id}</p>
-
-          <p><strong>Product Name:</strong> ${store.product_id?.name || "N/A"}</p>
-          <p><strong>Description:</strong> ${store.product_id?.description || "N/A"}</p>
-          <p><strong>Author:</strong> ${store.product_id?.author || "N/A"}</p>
-          <p><strong>Price:</strong> $${store.product_id?.price || "N/A"}</p>
-
-          <hr>
-
-          <p><strong>Available Qty:</strong> ${store.available_qty}</p>
-          <p><strong>Booked Qty:</strong> ${store.booked_qty}</p>
-          <p><strong>Sold Qty:</strong> ${store.sold_qty}</p>
-
-        </div>
-      `;
-    } catch (err) {
-      resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
+    if (!hasResult) {
+      alert("No products found.");
     }
   });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+//============================================================
+//=================TABLE EVENT LISTENER==========================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  let selectedStoreId = null;
+
+  const rows = document.querySelectorAll(".store-row");
+  const editBtn = document.getElementById("openEditStoreItemBtn");
+
+  const editStoreModalEl = document.getElementById("editStoreItemModal");
+  const editStoreForm = document.getElementById("editStoreItemForm");
+
+  //
+  // CLICK ROW TO SELECT
+  //
+  rows.forEach(row => {
+    row.addEventListener("click", () => {
+      // Remove previous selection
+      rows.forEach(r => r.classList.remove("table-active"));
+
+      // Highlight this row
+      row.classList.add("table-active");
+
+      // Save the selected ID
+      selectedStoreId = row.dataset.product_id;
+      editStoreId = row.dataset.id;
+
+      // Enable edit/delete buttons
+      editBtn.disabled = false;
+      deleteBtn.disabled = false;
+    });
+  });
+
+   const editStoreModal = new bootstrap.Modal(editStoreModalEl);
+
+  //
+  // GLOBAL EDIT BUTTON
+  //
+  editBtn.addEventListener("click", () => {
+    if (!editStoreId) return;
+
+    const row = document.querySelector(`.store-row[data-id="${editStoreId}"]`);
+
+    document.getElementById("edit-store-id").value = row.dataset.id;
+    document.getElementById("edit-store-product-id").value = row.dataset.product_id;
+    document.getElementById("edit-store-available").value = row.dataset.available_qty;
+    document.getElementById("edit-store-booked").value = row.dataset.booked_qty;
+    document.getElementById("edit-store-sold").value = row.dataset.sold_qty;
+
+    editStoreForm.action = `/bookstore/${row.dataset.id}/edit`;
+    editStoreModal.show();
+    });
+});
+
+//============================================================
+//===delete
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  let selectedStoreId = null;
+
+  const rows = document.querySelectorAll(".store-row");
+  const editBtn = document.getElementById("openEditStoreItemBtn");
+  const deleteBtn = document.getElementById("openDeleteStoreItemBtn");
+
+  // Bootstrap modal instance
+  const deleteBookstoreModalEl = document.getElementById("deleteBookstoreModal");
+  const deleteBookstoreModal = new bootstrap.Modal(deleteBookstoreModalEl);
+
+  //
+  // CLICK TO SELECT ROW
+  //
+  rows.forEach(row => {
+    row.addEventListener("click", () => {
+
+      rows.forEach(r => r.classList.remove("table-active"));
+      row.classList.add("table-active");
+
+      selectedStoreId = row.dataset.id;
+      deletedStoreId = row.dataset.product_id;
+
+      editBtn.disabled = false;
+      deleteBtn.disabled = false;
+    });
+  });
+
+  //
+  // OPEN DELETE MODAL
+  //
+  deleteBtn.addEventListener("click", () => {
+    if (!selectedStoreId) return;
+
+    document.getElementById("deleteStoreIdLabel").textContent = deletedStoreId;
+
+    window.bookstoreIdToDelete = selectedStoreId;
+
+    // Show the modal
+    deleteBookstoreModal.show();
+  });
+
+
+  //
+  // CONFIRM DELETE
+  //
+  document.getElementById("confirmDeleteBookstoreBtn").addEventListener("click", async () => {
+    const id = window.bookstoreIdToDelete;
+    if (!id) return;
+
+    try {
+      const response = await fetch(`/bookstore/${id}/delete`, {
+        method: "DELETE"
+      });
+
+      if (response.ok) {
+
+        const row = document.querySelector(`.store-row[data-id="${id}"]`);
+        if (row) row.remove();
+
+        deleteBookstoreModal.hide();
+        showToast(`Bookstore item with id "${id}" deleted!`, true);
+
+        selectedStoreId = null;
+        window.bookstoreIdToDelete = null;
+        editBtn.disabled = true;
+        deleteBtn.disabled = true;
+
+      } else {
+        showToast("Failed to delete bookstore item.", false);
+      }
+
+    } catch (err) {
+      console.error(err);
+      showToast("Error deleting bookstore item.", false);
+    }
+  });
+
+});
+
+
 
 
 //============================================================================
@@ -494,56 +699,147 @@ if (urlParams.get("userError") === "1") {
 });
 
 
-// 2. Delete user
+
+
+//=====NEW DELELE USER EVENT
+
 
 document.addEventListener("DOMContentLoaded", () => {
+
+  let selectedStoreId = null;
+
+  const rows = document.querySelectorAll(".user-row");
+  const editBtn = document.getElementById("openEditUserBtn");
+  const deleteBtn = document.getElementById("openDeleteUserBtn");
+
+  // Bootstrap modal instance
   const deleteUserModalEl = document.getElementById("deleteUserModal");
-  if (!deleteUserModalEl) return;
-
   const deleteUserModal = new bootstrap.Modal(deleteUserModalEl);
-  let userIdToDelete = null;
 
-  // Delegated event listener for delete buttons
-  document.addEventListener("click", (e) => {
-    const deleteBtn = e.target.closest(".delete-user-btn");
-    if (!deleteBtn) return;
+  //
+  // CLICK TO SELECT ROW
+  //
+  rows.forEach(row => {
+    row.addEventListener("click", () => {
 
-    userIdToDelete = deleteBtn.dataset.id;
+      rows.forEach(r => r.classList.remove("table-active"));
+      row.classList.add("table-active");
+
+      selectedUserId = row.dataset.id;
+
+      editBtn.disabled = false;
+      deleteBtn.disabled = false;
+    });
+  });
+
+  //
+  // OPEN DELETE MODAL
+  //
+  deleteBtn.addEventListener("click", () => {
+    if (!selectedUserId) return;
+
+    document.getElementById("deleteUserIdLabel").textContent = selectedUserId;
+
+    window.userIdToDelete = selectedUserId;
+
+    // Show the modal
     deleteUserModal.show();
   });
 
-  // Confirm delete
-  const confirmBtn = document.getElementById("confirmDeleteUserBtn");
-  if (confirmBtn) {
-    confirmBtn.addEventListener("click", async () => {
-      if (!userIdToDelete) return;
 
-      try {
-        const response = await fetch(`/users/${userIdToDelete}/delete`, {
-          method: "DELETE",
-        });
+  //
+  // CONFIRM DELETE
+  //
+  document.getElementById("confirmDeleteUserBtn").addEventListener("click", async () => {
+    const id = window.userIdToDelete;
+    if (!id) return;
 
-        if (response.ok) {
-          const card = document.querySelector(
-            `.delete-user-btn[data-id="${userIdToDelete}"]`
-          )?.closest(".col-md-4");
+    try {
+      const response = await fetch(`/users/${id}/delete`, {
+        method: "DELETE"
+      });
 
-          if (card) card.remove();
+      if (response.ok) {
 
-          deleteUserModal.hide();
-          showToast(`User with id "${userIdToDelete}" deleted!`, true);
+        const row = document.querySelector(`.user-row[data-id="${id}"]`);
+        if (row) row.remove();
 
-          userIdToDelete = null;
-        } else {
-          showToast("Failed to delete user.", false);
-        }
-      } catch (err) {
-        console.error(err);
-        showToast("Error deleting user.", false);
+        deleteUserModal.hide();
+        showToast(`User item with id "${id}" deleted!`, true);
+
+        selectedStoreId = null;
+        window.bookstoreIdToDelete = null;
+        editBtn.disabled = true;
+        deleteBtn.disabled = true;
+
+      } else {
+        showToast("Failed to delete user item.", false);
       }
-    });
-  }
+
+    } catch (err) {
+      console.error(err);
+      showToast("Error deleting user item.", false);
+    }
+  });
+
 });
+
+
+
+
+
+
+
+// 2. Delete user
+
+// document.addEventListener("DOMContentLoaded", () => {
+//   const deleteUserModalEl = document.getElementById("deleteUserModal");
+//   if (!deleteUserModalEl) return;
+
+//   const deleteUserModal = new bootstrap.Modal(deleteUserModalEl);
+//   let userIdToDelete = null;
+
+//   // Delegated event listener for delete buttons
+//   document.addEventListener("click", (e) => {
+//     const deleteBtn = e.target.closest(".delete-user-btn");
+//     if (!deleteBtn) return;
+
+//     userIdToDelete = deleteBtn.dataset.id;
+//     deleteUserModal.show();
+//   });
+
+//   // Confirm delete
+//   const confirmBtn = document.getElementById("confirmDeleteUserBtn");
+//   if (confirmBtn) {
+//     confirmBtn.addEventListener("click", async () => {
+//       if (!userIdToDelete) return;
+
+//       try {
+//         const response = await fetch(`/users/${userIdToDelete}/delete`, {
+//           method: "DELETE",
+//         });
+
+//         if (response.ok) {
+//           const card = document.querySelector(
+//             `.delete-user-btn[data-id="${userIdToDelete}"]`
+//           )?.closest(".col-md-4");
+
+//           if (card) card.remove();
+
+//           deleteUserModal.hide();
+//           showToast(`User with id "${userIdToDelete}" deleted!`, true);
+
+//           userIdToDelete = null;
+//         } else {
+//           showToast("Failed to delete user.", false);
+//         }
+//       } catch (err) {
+//         console.error(err);
+//         showToast("Error deleting user.", false);
+//       }
+//     });
+//   }
+// });
 
 
 // 3. edit users - show modal after clicking Edit button in User card
@@ -627,46 +923,156 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 5. search user
 
+// document.addEventListener("DOMContentLoaded", () => {
+//   const form = document.getElementById("searchUserForm");
+//   const resultDiv = document.getElementById("searchUserResult");
+
+//   if (!form) return; // Prevent errors on other pages
+
+//   form.addEventListener("submit", async (e) => {
+//     e.preventDefault();
+
+//     const id = document.getElementById("searchUserId").value.trim();
+
+//     if (!id) {
+//       resultDiv.innerHTML = `<div class="text-danger">Please enter a User ID.</div>`;
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch(`http://localhost:5000/api/users/${id}`); // <-- USER API
+
+//       if (!res.ok) throw new Error("User not found");
+
+//       const user = await res.json();
+
+//       resultDiv.innerHTML = `
+//         <div class="card p-3 mt-3">
+
+//           <p><strong>User ID:</strong> ${user._id}</p>
+//           <p><strong>Name:</strong> ${user.name || "N/A"}</p>
+//           <p><strong>Email:</strong> ${user.email || "N/A"}</p>
+//           <p><strong>Phone:</strong> ${user.phone || "N/A"}</p>
+//           <p><strong>Address:</strong> ${user.address || "N/A"}</p>
+//           <p><strong>Login:</strong> ${user.login || "N/A"}</p>
+
+//         </div>
+//       `;
+//     } catch (err) {
+//       resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
+//     }
+//   });
+// });
+
+
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("searchUserForm");
-  const resultDiv = document.getElementById("searchUserResult");
 
-  if (!form) return; // Prevent errors on other pages
-
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const id = document.getElementById("searchUserId").value.trim();
+    const userName = document.getElementById("searchUserName").value.trim().toLowerCase();
+    const userId = document.getElementById("searchUserId").value.trim().toLowerCase();
+    const userLogin = document.getElementById("searchUserLogin").value.trim().toLowerCase();
+    const userEmail = document.getElementById("searchUserEmail").value.trim().toLowerCase();
+    const userAddress = document.getElementById("searchAddress").value.trim().toLowerCase();
 
-    if (!id) {
-      resultDiv.innerHTML = `<div class="text-danger">Please enter a User ID.</div>`;
-      return;
-    }
+    const rows = document.querySelectorAll("#usersTableBody tr");
+    let hasResult = false;
 
-    try {
-      const res = await fetch(`http://localhost:5000/api/users/${id}`); // <-- USER API
+    rows.forEach(row => {
+      const cells = row.querySelectorAll("td");
 
-      if (!res.ok) throw new Error("User not found");
+      // Skip if there are no cells (e.g., "No bookstore items found" row)
+      if (!cells.length) return;
 
-      const user = await res.json();
+      const rowUserId = cells[0].innerText.trim().toLowerCase();
+      const rowUserName = cells[1].innerText.trim().toLowerCase();
+      const rowLogin = cells[2].innerText.trim().toLowerCase();
+      const rowEmail = cells[3].innerText.trim().toLowerCase();
+      const rowAddress = cells[4].innerText.trim().toLowerCase();
 
-      resultDiv.innerHTML = `
-        <div class="card p-3 mt-3">
+      const matchUserId = !userId || rowUserId.includes(userId);
+      const matchUserName = !userName || rowUserName.includes(userName);
+      const matchUserLogin = !userLogin || rowLogin.includes(userLogin);
+      const matchUserEmail = !userEmail || rowEmail.includes(userEmail);
+      const matchUserAddress = !userAddress || rowAddress.includes(userAddress);
 
-          <p><strong>User ID:</strong> ${user._id}</p>
-          <p><strong>Name:</strong> ${user.name || "N/A"}</p>
-          <p><strong>Email:</strong> ${user.email || "N/A"}</p>
-          <p><strong>Phone:</strong> ${user.phone || "N/A"}</p>
-          <p><strong>Address:</strong> ${user.address || "N/A"}</p>
-          <p><strong>Login:</strong> ${user.login || "N/A"}</p>
+      if (matchUserId && matchUserName && matchUserLogin && matchUserEmail && matchUserAddress) {
+        row.style.display = "";
+        hasResult = true;
+      } else {
+        row.style.display = "none";
+      }
+    });
 
-        </div>
-      `;
-    } catch (err) {
-      resultDiv.innerHTML = `<div class="text-danger">${err.message}</div>`;
+    if (!hasResult) {
+      alert("No users found.");
     }
   });
 });
+
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  let editUserId = null;
+
+  const rows = document.querySelectorAll(".user-row");
+  const editBtn = document.getElementById("openEditUserBtn");
+  const deleteBtn = document.getElementById("openDeleteUserBtn");
+
+  const editUserModalEl = document.getElementById("editUserModal");
+  const editUserForm = document.getElementById("editUserForm");
+  const editUserModal = new bootstrap.Modal(editUserModalEl);
+
+  //
+  // CLICK ROW TO SELECT
+  //
+  rows.forEach(row => {
+    row.addEventListener("click", () => {
+
+      rows.forEach(r => r.classList.remove("table-active"));
+      row.classList.add("table-active");
+
+      editUserId = row.dataset.id;
+
+      editBtn.disabled = false;
+      deleteBtn.disabled = false;
+    });
+  });
+
+  //
+  // GLOBAL EDIT BUTTON
+  //
+  editBtn.addEventListener("click", () => {
+    if (!editUserId) return;
+
+    const row = document.querySelector(`.user-row[data-id="${editUserId}"]`);
+
+
+    document.getElementById("edit-user-id-display").value = row.dataset.id;
+    document.getElementById("edit-user-name").value = row.dataset.name;
+    document.getElementById("edit-user-email").value = row.dataset.email;
+    document.getElementById("edit-user-phone").value = row.dataset.phone;
+    document.getElementById("edit-user-address").value = row.dataset.address;
+    document.getElementById("edit-user-login").value = row.dataset.login;
+    document.getElementById("edit-user-role-id").value = row.dataset.roleId;
+ 
+
+    // Set correct form action
+    editUserForm.action = `/users/${editUserId}/edit`;
+
+    editUserModal.show();
+  });
+});
+
 
 
 //============================================================================
@@ -954,43 +1360,43 @@ document.addEventListener("DOMContentLoaded", () => {
 // search booking on UI side
 
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("searchBookingForm");
+  const form = document.getElementById("searchStoreForm");
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const productName = document.getElementById("searchProductName").value.trim().toLowerCase();
-    const userName = document.getElementById("searchUserName").value.trim().toLowerCase();
-    const date = document.getElementById("searchDate").value.trim().toLowerCase();
-    const address = document.getElementById("searchAddress").value.trim().toLowerCase();
-    const status = document.getElementById("searchStatus").value.trim().toLowerCase();
+    const productId = document.getElementById("searchProductId").value.trim().toLowerCase();
+    const availableQty = document.getElementById("searchAvailableQty").value.trim().toLowerCase();
+    const bookedQty = document.getElementById("searchBookedQty").value.trim().toLowerCase();
+    const deliveredQty = document.getElementById("searchDeliveredQty").value.trim().toLowerCase();
 
-    // select all product cards
-    
-    const cards = document.querySelectorAll("#bookingCards .card-wrapper");
+    const rows = document.querySelectorAll("#storeTableBody tr");
     let hasResult = false;
 
-    cards.forEach(wrapper => {
-      const card = wrapper.querySelector(".card");
-      // Get data from the card
-      const cardproductName = card.querySelector(".card-body h5")?.innerText.trim().toLowerCase() || "";
-      const carduserName = card.querySelectorAll(".list-group .ms-2")[0]?.innerText.trim().toLowerCase() || "";
-      const cardDate = card.querySelectorAll(".list-group .ms-2")[1]?.innerText.trim().toLowerCase() || "";
-      const cardAddress = card.querySelectorAll(".list-group .ms-2")[3]?.innerText.trim().toLowerCase() || "";
-      const cardStatus = card.querySelectorAll(".list-group .ms-2")[4]?.innerText.trim().toLowerCase() || "";
+    rows.forEach(row => {
+      const cells = row.querySelectorAll("td");
 
+      // Skip if there are no cells (e.g., "No bookstore items found" row)
+      if (!cells.length) return;
 
-      const matchProductName = !productName || cardproductName.includes(productName);
-      const matchUserName = !userName || carduserName.includes(userName);
-      const matchDate = !date || cardDate.includes(date);
-      const matchAddress = !address || cardAddress.includes(address);
-      const matchStatus = !status || cardStatus.includes(status);
+      const rowProductId = cells[0].innerText.trim().toLowerCase();
+      const rowProductName = cells[1].innerText.trim().toLowerCase();
+      const rowAvailableQty = cells[2].innerText.trim().toLowerCase();
+      const rowBookedQty = cells[3].innerText.trim().toLowerCase();
+      const rowDeliveredQty = cells[4].innerText.trim().toLowerCase();
 
-      if (matchProductName && matchUserName && matchDate && matchAddress && matchStatus) {
-        wrapper.style.display = "block";
+      const matchProductId = !productId || rowProductId.includes(productId);
+      const matchProductName = !productName || rowProductName.includes(productName);
+      const matchAvailableQty = !availableQty || rowAvailableQty.includes(availableQty);
+      const matchBookedQty = !bookedQty || rowBookedQty.includes(bookedQty);
+      const matchDeliveredQty = !deliveredQty || rowDeliveredQty.includes(deliveredQty);
+
+      if (matchProductId && matchProductName && matchAvailableQty && matchBookedQty && matchDeliveredQty) {
+        row.style.display = "";
         hasResult = true;
       } else {
-        wrapper.style.display = "none";
+        row.style.display = "none";
       }
     });
 
@@ -999,6 +1405,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
 
 
 

@@ -72,7 +72,7 @@
         <div class="card shadow-sm">
 
           <!-- IMAGE AREA -->
-          <div class="card-img-top bg-secondary text-white text-center p-5">
+          <div class="card-img-top bg-secondary text-white text-center p-5 fs-5">
             <% if (booking.product_id?.image_path) { %>
               <img 
                 src="<%= booking.product_id.image_path %>" 
@@ -87,7 +87,7 @@
           <!-- PRODUCT MAIN INFO -->
           <div class="card-body py-3">
             <div class="ms-3">
-            <h5 class="fw-bold mb-1"><strong><%= booking.product_id?.name %></strong></h5>
+            <h5 class="mb-1"><%= booking.product_id?.name %></h5>
             <p class="text-muted mb-1"><%= booking.product_id?._id %></p>
             </div>
           </div>
@@ -96,17 +96,17 @@
           <ul class="list-group list-group-flush">
 
             <li class="list-group-item">
-              <span class="ms-2"><%= booking.user_id?.name || "N/A" %></span>
+              <span class="ms-1"><%= booking.user_id?.name || "N/A" %></span>
             </li>
 
             <li class="list-group-item">
-              <span class="ms-2"><%= booking.delivery_date 
+              <span class="ms-1"><%= booking.delivery_date 
         ? booking.delivery_date.match(/\d{4}-\d{2}-\d{2}/)[0] 
         : "N/A" %></span>
             </li>
 
             <li class="list-group-item">
-              <span class="ms-2">
+              <span class="ms-1">
                 <%= booking.delivery_time 
                     ? new Date(booking.delivery_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     : "N/A" 
@@ -115,11 +115,11 @@
             </li>
 
             <li class="list-group-item">
-              <span class="ms-2"><%= booking.delivery_address || "N/A" %></span>
+              <span class="ms-1"><%= booking.delivery_address || "N/A" %></span>
             </li>
 
             <li class="list-group-item">
-              <span class="ms-2"><%= booking.status_id?.name || "Pending" %></span>
+              <span class="ms-1"><%= booking.status_id?.name || "Pending" %></span>
             </li>
 
           </ul>
