@@ -197,6 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("searchForm");
+  const resultDiv = document.getElementById("searchResult");
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -225,20 +226,22 @@ document.addEventListener("DOMContentLoaded", () => {
       const matchPrice = !price || cardPrice.includes(price);
 
       if (matchId && matchName && matchAuthor && matchPrice) {
-        wrapper.style.display = "block";
+        wrapper.style.display = "";           // show matching row
+        wrapper.classList.add("visible");     // mark it
         hasResult = true;
       } else {
-        wrapper.style.display = "none";
+        wrapper.style.display = "none";       // hide non-matching row
+        wrapper.classList.remove("visible");
       }
     });
 
     if (!hasResult) {
-      alert("No products found.");
+      resultDiv.innerHTML = `<div class="alert alert-warning">No products found</div>`;
+    } else {
+      resultDiv.innerHTML = ""; // clear previous message
     }
   });
 });
-
-
 
 //============================================================================
 //=================BOOKSTORE==================================================
@@ -460,6 +463,7 @@ if (urlParams.get("storeUpdated") === "1") {
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("searchBookingForm");
+  const resultDiv = document.getElementById("#searchBookingResult");
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -491,15 +495,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const matchStatus = !bookingStatus || cardStatus.includes(bookingStatus);
       
       if (matchUserName && matchProductName && matchDate && matchAddress && matchStatus) {
-        wrapper.style.display = "block";
+        wrapper.style.display = "";           // show matching row
+        wrapper.classList.add("visible");     // mark it
         hasResult = true;
       } else {
-        wrapper.style.display = "none";
+        wrapper.style.display = "none";       // hide non-matching row
+        wrapper.classList.remove("visible");
       }
     });
 
     if (!hasResult) {
-      alert("No products found.");
+      resultDiv.innerHTML = `<div class="alert alert-warning">No users found.</div>`;
+    } else {
+      resultDiv.innerHTML = ""; // clear previous message
     }
   });
 });
@@ -970,6 +978,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("searchUserForm");
+  const resultDiv = document.getElementById("searchUserResult");
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -985,8 +994,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     rows.forEach(row => {
       const cells = row.querySelectorAll("td");
-
-      // Skip if there are no cells (e.g., "No bookstore items found" row)
       if (!cells.length) return;
 
       const rowUserId = cells[0].innerText.trim().toLowerCase();
@@ -1002,18 +1009,25 @@ document.addEventListener("DOMContentLoaded", () => {
       const matchUserAddress = !userAddress || rowAddress.includes(userAddress);
 
       if (matchUserId && matchUserName && matchUserLogin && matchUserEmail && matchUserAddress) {
-        row.style.display = "";
+        row.style.display = "";           // show matching row
+        row.classList.add("visible");     // mark it
         hasResult = true;
       } else {
-        row.style.display = "none";
+        row.style.display = "none";       // hide non-matching row
+        row.classList.remove("visible");
       }
     });
 
+    // Show message in page instead of alert
     if (!hasResult) {
-      alert("No users found.");
+      resultDiv.innerHTML = `<div class="alert alert-warning">No users found.</div>`;
+    } else {
+      resultDiv.innerHTML = ""; // clear previous message
     }
   });
 });
+
+
 
 
 
@@ -1227,52 +1241,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // 3. delete booking - delete booking modal
 
-document.addEventListener("DOMContentLoaded", () => {
-// -------------------------------
-// DELETE BOOKING MODAL
-// -------------------------------
-const deleteBookingModalEl = document.getElementById("deleteBookingModal");
-if (deleteBookingModalEl) {
-const deleteBookingModal = new bootstrap.Modal(deleteBookingModalEl);
-let bookingIdToDelete = null;
+// document.addEventListener("DOMContentLoaded", () => {
+// // -------------------------------
+// // DELETE BOOKING MODAL
+// // -------------------------------
+// const deleteBookingModalEl = document.getElementById("deleteBookingModal");
+// if (deleteBookingModalEl) {
+// const deleteBookingModal = new bootstrap.Modal(deleteBookingModalEl);
+// let bookingIdToDelete = null;
 
 
-document.querySelectorAll(".delete-booking-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    bookingIdToDelete = btn.dataset.id;
-    deleteBookingModal.show();
-  });
-});
+// document.querySelectorAll(".delete-booking-btn").forEach(btn => {
+//   btn.addEventListener("click", () => {
+//     bookingIdToDelete = btn.dataset.id;
+//     deleteBookingModal.show();
+//   });
+// });
 
-// Confirm delete
-document.getElementById("confirmDeleteBookingBtn").addEventListener("click", async () => {
-  if (!bookingIdToDelete) return;
-  try {
-    const res = await fetch(`/bookings/${bookingIdToDelete}/delete`, { method: "DELETE" });
-    if (res.ok) {
-      const card = document.querySelector(`.delete-booking-btn[data-id="${bookingIdToDelete}"]`)?.closest(".col-md-4");
-      if (card) card.remove();
-      showToast(`Booking with id "${bookingIdToDelete}" deleted!`, true);
-    } else {
-      showToast("Failed to delete booking.", false);
-    }
-  } catch (err) {
-    console.error(err);
-    showToast("Error deleting booking.", false);
-  }
-  deleteBookingModal.hide();
-  bookingIdToDelete = null;
-});
+// // Confirm delete
+// document.getElementById("confirmDeleteBookingBtn").addEventListener("click", async () => {
+//   if (!bookingIdToDelete) return;
+//   try {
+//     const res = await fetch(`/bookings/${bookingIdToDelete}/delete`, { method: "DELETE" });
+//     if (res.ok) {
+//       const card = document.querySelector(`.delete-booking-btn[data-id="${bookingIdToDelete}"]`)?.closest(".col-md-4");
+//       if (card) card.remove();
+//       showToast(`Booking with id "${bookingIdToDelete}" deleted!`, true);
+//     } else {
+//       showToast("Failed to delete booking.", false);
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     showToast("Error deleting booking.", false);
+//   }
+//   deleteBookingModal.hide();
+//   bookingIdToDelete = null;
+// });
 
-// Cancel/close modal
-deleteBookingModalEl.addEventListener("click", (e) => {
-  if (e.target.classList.contains("btn-close") || e.target.classList.contains("btn-secondary")) {
-    deleteBookingModal.hide();
-  }
-});
+// // Cancel/close modal
+// deleteBookingModalEl.addEventListener("click", (e) => {
+//   if (e.target.classList.contains("btn-close") || e.target.classList.contains("btn-secondary")) {
+//     deleteBookingModal.hide();
+//   }
+// });
 
-}
-});
+// }
+// });
 
 
 
@@ -1361,6 +1375,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("searchStoreForm");
+  const resultDiv = document.getElementById("searchStoreResult");
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -1393,15 +1408,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const matchDeliveredQty = !deliveredQty || rowDeliveredQty.includes(deliveredQty);
 
       if (matchProductId && matchProductName && matchAvailableQty && matchBookedQty && matchDeliveredQty) {
-        row.style.display = "";
+        row.style.display = "";           // show matching row
+        row.classList.add("visible");     // mark it
         hasResult = true;
       } else {
-        row.style.display = "none";
+        row.style.display = "none";       // hide non-matching row
+        row.classList.remove("visible");
       }
     });
 
     if (!hasResult) {
-      alert("No products found.");
+      resultDiv.innerHTML = `<div class="alert alert-warning">No bookstore items found</div>`;
+    } else {
+      resultDiv.innerHTML = ""; // clear previous message
     }
   });
 });
