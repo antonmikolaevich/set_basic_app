@@ -24,6 +24,7 @@ const newBooking = {
 }
 
 const newBookstore = {
+    "product_id": "692d748ffca25ae7b427d348",
     "available_quantity": "100",
     "booked_quantity": "1",
     "sold_quantity": "50"

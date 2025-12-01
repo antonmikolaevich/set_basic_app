@@ -121,6 +121,7 @@ test.describe('UI part testing', async () => {
             await productsPage.getProductsCard(6).id.isVisible();
             const productIdText = await productsPage.getProductsCard(6).id.textContent();
             await productsPage.getProductsCard(6).deleteBtn.click();
+            await page.waitForTimeout(2000);
             await productsPage.deleteProductForm.rootEl.isVisible();
             await productsPage.deleteProductForm.deleteBtn.click();
             await expect(await productsPage.deleteProductForm.rootEl).not.toBeVisible();
@@ -225,22 +226,18 @@ test.describe('UI part testing', async () => {
             })
 
         test('Scenario 11 - Verify that the create bookstore works correctly - create the bookstore', async ({ bookstorePage, page, productsPage}) => {
-            await productsPage.open();
-            await productsPage.getProductsCard(1).id.isVisible();
-            const productId = await productsPage.getProductsCard(1).id.textContent();
-            const productName = await productsPage.getProductsCard(1).name.textContent();
             await bookstorePage.open();
             await bookstorePage.bookstoreButtons.rootEl.isVisible();
             await bookstorePage.bookstoreButtons.createButton.click();
             await bookstorePage.createBookstoreForm.rootEl.isVisible();
-            await bookstorePage.createBookstoreForm.productId.fill(productId);
+            await bookstorePage.createBookstoreForm.productId.fill(newBookstore.product_id);
             await bookstorePage.createBookstoreForm.availableQuantity.fill(newBookstore.available_quantity);
             await bookstorePage.createBookstoreForm.bookedQuantity.fill(newBookstore.booked_quantity);
             await bookstorePage.createBookstoreForm.soldQuantity.fill(newBookstore.sold_quantity);
             await bookstorePage.createBookstoreForm.createBtn.click();
 
-            expect(await bookstorePage.getBookstoresCard(3).id.textContent()).toContain(productId);
-            expect(await bookstorePage.getBookstoresCard(3).productName.textContent()).toContain(productName);
+            expect(await bookstorePage.getBookstoresCard(3).id.textContent()).toContain(newBookstore.product_id);
+            expect(await bookstorePage.getBookstoresCard(3).productName.textContent()).toContain('Night Manager');
             expect(await bookstorePage.getBookstoresCard(3).available_qty.textContent()).toContain(newBookstore.available_quantity);
             expect(await bookstorePage.getBookstoresCard(3).booked_qty.textContent()).toContain(newBookstore.booked_quantity);
             expect(await bookstorePage.getBookstoresCard(3).delivered_qty.textContent()).toContain(newBookstore.sold_quantity);
@@ -281,6 +278,7 @@ test.describe('UI part testing', async () => {
             await bookstorePage.bookstoreButtons.deleteButton.click();
             await bookstorePage.deleteBookstoreForm.rootEl.isVisible();
             await bookstorePage.deleteBookstoreForm.deleteBtn.click();
+            await page.waitForTimeout(2000);
             await expect(await bookstorePage.deleteBookstoreForm.rootEl).not.toBeVisible();
             await bookstorePage.search.productId.fill(bookstoreId);
             await bookstorePage.search.searchButton.click();
