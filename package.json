@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "api_tests": "mocha",
-    "unit_tests": "jest --config ./jest.config.js --coverage",
+    "unit_tests": "jest --config ./jest.config.js",
+    "unit_tests_coverage": "jest --config ./jest.config.js --coverage",
     "set_roles": "node ./scripts/seedRoles.js",
     "set_booking_statuses": "node ./scripts/seedBookingStatuses.js",
     "start_server": "node src/app.js",
