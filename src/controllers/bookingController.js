@@ -80,15 +80,34 @@ exports.createBooking = async (req, res) => {
 // Get all bookings
 exports.getBookings = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
+
+    const totalBookings = await Booking.countDocuments();
+
     const bookings = await Booking.find()
-    .populate('user_id', 'name email')
-    .populate('product_id', 'name price')
-    .populate('status_id', 'name');
-    res.status(200).json(bookings);
+      .populate('user_id', 'name email')
+      .populate('product_id', 'name price')
+      .populate('status_id', 'name')
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalBookings / limit);
+
+    res.status(200).json({
+      bookings,
+      page,
+      totalPages
+    });
+
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving bookings', error });
+    res.status(500).json({
+      message: 'Error retrieving bookings',
+      error
+    });
   }
 };
+
 
 // Get single booking
 exports.getBooking = async (req, res) => {
@@ -217,3 +236,57 @@ exports.deleteBooking = async (req, res) => {
     res.status(500).json({ message: 'Error deleting booking', error });
   }
 };
+
+
+// Update only the booking status
+exports.updateBookingStatus = async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+    const { status_id } = req.body;
+
+    if (!bookingId) {
+      return res.status(400).json({ message: 'Booking ID is required' });
+    }
+
+    if (!status_id) {
+      return res.status(400).json({ message: 'status_id is required' });
+    }
+
+    // Check if booking exists
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Validate status (can be ID or name)
+    let status;
+    if (status_id.length === 24) {
+      status = await BookingStatus.findById(status_id);
+    } else {
+      status = await BookingStatus.findOne({ name: status_id });
+    }
+
+    if (!status) {
+      return res.status(404).json({ message: 'Booking status not found' });
+    }
+
+    // Update only the status
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      bookingId,
+      { status_id: status._id },
+      { new: true }
+    )
+    .populate('user_id', 'name email')
+    .populate('product_id', 'name price')
+    .populate('status_id', 'name');
+
+    res.status(200).json({
+      message: 'Booking status updated successfully',
+      booking: updatedBooking
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating booking status', error });
+  }
+};
+

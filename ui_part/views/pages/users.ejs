@@ -1,0 +1,150 @@
+<section>
+
+  <form id="searchUserForm" class="row g-3">
+    <div class="row align-items-center mb-3 pt-4">
+       <div class="col-md-2 text-start">
+      <label for="searchUserName" class="form-label mb-0">User Name</label>
+    </div>
+    <div class="col-md-4">
+      <input id="searchUserName" name="userName" class="form-control">
+    </div>
+    <!-- User Id -->
+    <div class="col-md-2 text-start">
+      <label for="searchUserId" class="form-label mb-0">User Id</label>
+    </div>
+    <div class="col-md-4">
+      <input id="searchUserId" name="userId" class="form-control">
+    </div>
+  </div>
+
+  <div class="row align-items-center mb-3">
+       <div class="col-md-2 text-start">
+      <label for="searchUserLogin" class="form-label mb-0">Login</label>
+    </div>
+    <div class="col-md-4">
+      <input id="searchUserLogin" name="userLogin" class="form-control">
+    </div>
+    <!-- User Id -->
+    <div class="col-md-2 text-start">
+      <label for="searchUserEmail" class="form-label mb-0">Email</label>
+    </div>
+    <div class="col-md-4">
+      <input id="searchUserEmail" name="userEmail" class="form-control">
+    </div>
+  </div>
+
+
+  <div class="row align-items-center mb-3">
+    <div class="col-md-2 text-start">
+      <label for="searchAddress" class="form-label mb-0">Address</label>
+    </div>
+    <div class="col-md-4">
+      <select id="searchAddress" name="address" class="form-control">
+  <option value="" selected>Small select</option>
+  <% 
+    const addresses = [...new Set(users.map(u => u.address))]; // unique addresses
+    addresses.forEach(address => { 
+  %>
+    <option value="<%= address %>"><%= address %></option>
+  <% }) %>
+</select>
+    </div>
+     <div class="col-md-6 text-end">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+    </div>
+
+
+  </form>
+
+  <div id="searchUserResult" class="mt-3"></div>
+</section>
+
+<section class="row mb-3">
+  <div class="col">
+    <h3>Search Results</h3>
+  </div>
+</section>
+
+
+<table class="table table-bordered text-center">
+    <tr>
+      <td scope="col">User Id</td>
+      <td scope="col">User Name</td>
+      <td scope="col">Login</td>
+      <td scope="col">Email</td>
+      <td scope="col">Address</td>
+    </tr>
+  <tbody id="usersTableBody">
+   <% if (users && users.length > 0) { %>
+    <% users.forEach(user => { %>
+        <tr class="user-row" 
+            data-id="<%= user._id %>"
+            data-name="<%= user.name %>"
+            data-login="<%= user.login %>"
+            data-email="<%= user.email %>"
+            data-address="<%= user.address %>"
+            data-phone="<%= user.phone %>"
+            data-role-id="<%= user.role_id._id %>"> 
+          <td><%= user._id %></td>
+          <td><%= user.name %></td>
+          <td><%= user.login %></td>
+          <td><%= user.email %></td>
+          <td><%= user.address %></td>
+        </tr>
+      <% }) %>
+    <% } else { %>
+      <tr>
+        <td colspan="5" class="text-center">No users found.</td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+
+
+
+
+<div class="d-flex justify-content-between align-items-center mt-4">
+  <!-- Buttons on the left -->
+  <div>
+    <button class="btn btn-success me-2" id="openCreateUserBtn">Create</button>
+    <button class="btn btn-primary me-2" id="openEditUserBtn" disabled>Edit</button>
+    <button class="btn btn-danger" id="openDeleteUserBtn" disabled>Delete</button>
+  </div>
+
+  <!-- Pagination on the right -->
+  <% if (totalPages && totalPages > 1) { %>
+  <nav aria-label="Users pagination">
+    <ul class="pagination mb-0">
+      <!-- Previous -->
+      <% if (currentPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="/users?page=<%= currentPage - 1 %>">Previous</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">Previous</span>
+        </li>
+      <% } %>
+
+      <!-- Page numbers -->
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+          <a class="page-link" href="/users?page=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+
+      <!-- Next -->
+      <% if (currentPage < totalPages) { %>
+        <li class="page-item">
+          <a class="page-link" href="/users?page=<%= currentPage + 1 %>">Next</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">Next</span>
+        </li>
+      <% } %>
+    </ul>
+  </nav>
+  <% } %>
+</div>

@@ -1,0 +1,156 @@
+<section>
+  <form id="searchStoreForm" class="row g-3">
+
+    <div class="row align-items-center mb-3 pt-4">
+       <div class="col-md-2 text-start">
+      <label for="searchProductName" class="form-label mb-0">Product Name</label>
+    </div>
+    <div class="col-md-4">
+      <input id="searchProductName" name="productName" class="form-control">
+    </div>
+    <!-- Product Id -->
+    <div class="col-md-2 text-start">
+      <label for="searchProductId" class="form-label mb-0">Product Id</label>
+    </div>
+    <div class="col-md-4">
+      <input id="searchProductId" name="productId" class="form-control">
+    </div>
+  </div>
+
+  <div class="row align-items-center mb-3">
+    <div class="col-md-2 text-start">
+      <label for="searchAuthor" class="form-label mb-0">Author</label>
+    </div>
+    <div class="col-md-4">
+      <input id="searchAuthor" name="author" class="form-control">
+    </div>
+     <div class="col-md-2 text-start">
+      <label for="searchAvailableQty" class="form-label mb-0">Available Quantity</label>
+    </div>
+    <div class="col-md-4">
+      <input id="searchAvailableQty" name="availableQty" class="form-control">
+    </div>
+  </div>
+
+
+  <div class="row align-items-center mb-3">
+    <div class="col-md-2 text-start">
+      <label for="searchBookedQty" class="form-label mb-0">Booked Quantity</label>
+    </div>
+    <div class="col-md-4">
+      <select id="searchBookedQty" name="bookedQty" class="form-control">
+        <option value="" selected>Small select</option>
+  <% 
+    const booked_qty = [...new Set(stores.map(u => u.booked_qty))]; 
+    booked_qty.forEach(qty => { 
+  %>
+    <option value="<%= qty %>"><%= qty %></option>
+  <% }) %>
+      </select>
+    </div>
+    <div class="col-md-2 text-start">
+      <label for="searchDeliveredQty" class="form-label mb-0">Delivered Quantity</label>
+    </div>
+    <div class="col-md-4">
+      <input id="searchDeliveredQty" name="deliveredQty" class="form-control">
+    </div>
+  </div>
+
+  <div class="row align-items-center mb-3">
+    <div class="col-md-12 text-end">
+      <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+    </div>
+
+  </form>
+
+  <div id="searchStoreResult" class="mt-3"></div>
+</section>
+
+
+
+<section class="row mb-3">
+  <div class="col">
+    <h3>Search Results</h3>
+  </div>
+</section>
+
+<table class="table table-bordered text-center">
+    <tr>
+      <td scope="col">Product Id</td>
+      <td scope="col">Product Name</td>
+      <td scope="col">Available</td>
+      <td scope="col">Booked</td>
+      <td scope="col">Delivered</td>
+    </tr>
+  <tbody id="storeTableBody">
+    <% if (stores && stores.length > 0) { %>
+      <% stores.forEach(store => { %>
+        <tr class="store-row" 
+            data-id="<%= store._id %>"
+            data-product_id="<%= store.product_id?._id %>"
+            data-available_qty="<%= store.available_qty %>"
+            data-booked_qty="<%= store.booked_qty %>"
+            data-sold_qty="<%= store.sold_qty %>">  
+          <td><%= store.product_id?._id %></td>
+          <td><%= store.product_id?.name %></td>
+          <td><%= store.available_qty %></td>
+          <td><%= store.booked_qty %></td>
+          <td><%= store.sold_qty %></td>
+        </tr>
+      <% }) %>
+    <% } else { %>
+      <tr>
+        <td colspan="5" class="text-center">No bookstore items found.</td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+
+
+
+<div class="d-flex justify-content-between align-items-center mt-4">
+  <!-- Buttons left -->
+  <div>
+    <button class="btn btn-success me-2" id="openCreateStoreItemBtn">Create</button>
+    <button class="btn btn-primary me-2" id="openEditStoreItemBtn" disabled>Edit</button>
+    <button class="btn btn-danger" id="openDeleteStoreItemBtn" disabled>Delete</button>
+  </div>
+
+  <!-- Pagination right -->
+  <% if (totalPages && totalPages > 1) { %>
+  <nav aria-label="Bookstore pagination">
+    <ul class="pagination mb-0">
+      <!-- Previous -->
+      <% if (currentPage > 1) { %>
+        <li class="page-item">
+          <a class="page-link" href="/bookstore?page=<%= currentPage - 1 %>">Previous</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">Previous</span>
+        </li>
+      <% } %>
+
+      <!-- Page numbers -->
+      <% for (let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+          <a class="page-link" href="/bookstore?page=<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+
+      <!-- Next -->
+      <% if (currentPage < totalPages) { %>
+        <li class="page-item">
+          <a class="page-link" href="/bookstore?page=<%= currentPage + 1 %>">Next</a>
+        </li>
+      <% } else { %>
+        <li class="page-item disabled">
+          <span class="page-link">Next</span>
+        </li>
+      <% } %>
+    </ul>
+  </nav>
+  <% } %>
+</div>
+

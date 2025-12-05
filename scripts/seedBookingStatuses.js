@@ -14,7 +14,8 @@ const seedBookingStatuses = async () => {
       { name: 'REJECTED' },
       { name: 'APPROVED' },
       { name: 'CANCELLED' },
-      { name: 'IN_DELIVERY' }
+      { name: 'IN_DELIVERY' },
+      { name: 'CLOSED' }
     ];
 
     for (let status of statuses) {

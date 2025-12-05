@@ -4,9 +4,10 @@ require('dotenv').config(); // Load environment variables
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs'); // Import YAML loader
 const path = require('path');
+const cors = require('cors');
 
 const app = express();
-
+app.use(cors({ origin: 'http://localhost:4000' })); // allow UI server
 app.use(express.json());
 
 // Route imports

@@ -31,13 +31,32 @@ exports.createBookStoreItem = async (req, res) => {
   }
 };
 
-// Get all BookStore items (with product details)
+// Get all BookStore items
 exports.getBookStoreItems = async (req, res) => {
   try {
-    const bookStoreItems = await BookStore.find().populate('product_id', 'name description price author image_path');
-    res.status(200).json(bookStoreItems);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
+
+    const totalStores = await BookStore.countDocuments();
+
+    const bookStoreItems = await BookStore.find()
+      .populate('product_id', 'name description price author image_path')
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalStores / limit);
+
+    res.status(200).json({
+      stores: bookStoreItems,
+      page,
+      totalPages
+    });
+
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving BookStore items', error });
+    res.status(500).json({
+      message: 'Error retrieving BookStore items',
+      error
+    });
   }
 };
 

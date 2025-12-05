@@ -1,0 +1,62 @@
+<div class="modal fade" id="editUserModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <form id="editUserForm" method="POST" action="">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <input type="hidden" name="_id" id="edit-user-id">
+
+          <div class="mb-3">
+            <label class="form-label">User ID</label>
+            <input id="edit-user-id-display" class="form-control" disabled>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input name="name" id="edit-user-name" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" id="edit-user-email" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Phone</label>
+            <input name="phone" id="edit-user-phone" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            <input name="address" id="edit-user-address" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Login</label>
+            <input name="login" id="edit-user-login" class="form-control" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Role ID</label>
+            <input type="number" name="role_id" id="edit-user-role-id" class="form-control" disabled>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary">
+            Update User
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
