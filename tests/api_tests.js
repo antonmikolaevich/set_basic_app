@@ -9,6 +9,7 @@ let createdBookingId;
 
 describe("Bookshop API CRUD tests", () => {
     describe("Users suite", () => {
+        
         it("Create user - /api/users [POST]", async () => {
             const response = await sendUserRequest("users", newUser, "post");
             expect(response.status).to.equal(201);
@@ -61,9 +62,11 @@ describe("Bookshop API CRUD tests", () => {
             const response = await sendUserRequest(`users/${createdUserId}`);
             expect(response.status).to.equal(404);
         })
+
     })
 
     describe("Products suite", () => {
+
         it("Create product - /api/products [POST]", async () => {
             const response = await sendUserRequest("products", newProduct, "post");
             expect(response.status).to.equal(201);
@@ -117,6 +120,7 @@ describe("Bookshop API CRUD tests", () => {
     })
 
     describe('Bookings suite', () => {
+
         it("Create the user for booking", async () => {
             const response = await sendUserRequest("users", userBooking, "post");
             expect(response.status).to.equal(201);
@@ -212,9 +216,11 @@ describe("Bookshop API CRUD tests", () => {
             const response = await sendUserRequest(`products/${createdProductId}`);
             expect(response.status).to.equal(404);
         });
+
     })    
 
     describe("Bookstore suite", () => {
+
         it("Create product for bookstore checking - api/products [POST]", async () => {
             const response = await sendUserRequest("products", productBooking, "post");
             expect(response.status).to.equal(201);
@@ -282,5 +288,6 @@ describe("Bookshop API CRUD tests", () => {
             const response = await sendUserRequest(`products/${createdProductId}`, null, "delete");
             expect(response.status).to.equal(200);
         })
+
     })
 })   
