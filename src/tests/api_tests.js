@@ -4,6 +4,7 @@ const { newUser, newUserUpd, newProduct, newProductUpd, userBooking, productBook
 let createdUserId;
 let createdProductId;
 let createdBookstoreItemId;
+let createdBookingId;
 
 
 describe("Bookshop API CRUD tests", () => {

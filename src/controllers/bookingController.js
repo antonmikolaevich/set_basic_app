@@ -47,20 +47,18 @@ exports.createBooking = async (req, res) => {
       // Parse delivery_time (expected format: "HH:MM")
       const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
       if (!timeRegex.test(delivery_time)) {
-        throw new Error('Invalid delivery_time format');
-      }
-      
-      const [hours, minutes] = delivery_time.split(':');
-      parsedDeliveryTime = new Date();
-      parsedDeliveryTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-      
-    } catch (dateError) {
-      return res.status(400).json({ 
-        message: 'Invalid date/time format. Please use YYYY-MM-DD for delivery_date (e.g., "2025-11-10") and HH:MM for delivery_time (e.g., "19:00")' 
-      });
+      throw new Error('Invalid delivery_time format');
     }
-
-    const booking = new Booking({
+    
+    const [hours, minutes] = delivery_time.split(':');
+    parsedDeliveryTime = new Date();
+    parsedDeliveryTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+    
+  } catch {
+    return res.status(400).json({ 
+      message: 'Invalid date/time format. Please use YYYY-MM-DD for delivery_date (e.g., "2025-11-10") and HH:MM for delivery_time (e.g., "19:00")' 
+    });
+  }    const booking = new Booking({
       user_id: user_id,
       product_id: product_id,
       delivery_address,
@@ -154,38 +152,36 @@ exports.updateBooking = async (req, res) => {
 
     if (delivery_address) {
       updateData.delivery_address = delivery_address;
-    }
+  }
 
-    if (delivery_date) {
-      try {
-        const parsedDeliveryDate = new Date(delivery_date);
-        if (isNaN(parsedDeliveryDate.getTime())) {
-          return res.status(400).json({ message: 'Invalid delivery_date format. Use YYYY-MM-DD (e.g., "2025-11-10")' });
-        }
-        parsedDeliveryDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
-        updateData.delivery_date = parsedDeliveryDate;
-      } catch (error) {
+  if (delivery_date) {
+    try {
+      const parsedDeliveryDate = new Date(delivery_date);
+      if (isNaN(parsedDeliveryDate.getTime())) {
         return res.status(400).json({ message: 'Invalid delivery_date format. Use YYYY-MM-DD (e.g., "2025-11-10")' });
       }
+      parsedDeliveryDate.setHours(0, 0, 0, 0); // Set time to 00:00:00
+      updateData.delivery_date = parsedDeliveryDate;
+    } catch {
+      return res.status(400).json({ message: 'Invalid delivery_date format. Use YYYY-MM-DD (e.g., "2025-11-10")' });
     }
+  }
 
-    if (delivery_time) {
-      try {
-        const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
-        if (!timeRegex.test(delivery_time)) {
-          return res.status(400).json({ message: 'Invalid delivery_time format. Use HH:MM (e.g., "19:00")' });
-        }
-        
-        const [hours, minutes] = delivery_time.split(':');
-        const parsedDeliveryTime = new Date();
-        parsedDeliveryTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-        updateData.delivery_time = parsedDeliveryTime;
-      } catch (error) {
+  if (delivery_time) {
+    try {
+      const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
+      if (!timeRegex.test(delivery_time)) {
         return res.status(400).json({ message: 'Invalid delivery_time format. Use HH:MM (e.g., "19:00")' });
       }
+      
+      const [hours, minutes] = delivery_time.split(':');
+      const parsedDeliveryTime = new Date();
+      parsedDeliveryTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      updateData.delivery_time = parsedDeliveryTime;
+    } catch {
+      return res.status(400).json({ message: 'Invalid delivery_time format. Use HH:MM (e.g., "19:00")' });
     }
-
-    if (status_id) {
+  }    if (status_id) {
       let status;
       if (status_id.length === 24) {
         status = await BookingStatus.findById(status_id);

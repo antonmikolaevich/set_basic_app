@@ -1,7 +1,7 @@
 const { expect } = require('@playwright/test');
 const { test } = require('../pom/pages/index.js');
-const { getFieldValue } = require('../functions/helpers.js');
-const { updatedUser, newProduct, newBooking, newBookstore } = require('../data/users.js');
+// const { getFieldValue } = require('../functions/helpers.js');
+const { updatedUser, newProduct, /* newBooking, */ newBookstore } = require('../data/users.js');
 
 test.describe('UI part testing', async () => {
   
@@ -10,7 +10,7 @@ test.describe('UI part testing', async () => {
         await userPage.open()
 });
 
-       test('Scenario 1 - Verify that the create user works correctly - create the user', async ({ userPage, page }) => {
+       test('Scenario 1 - Verify that the create user works correctly - create the user', async ({ userPage, page: _page }) => {
             await userPage.results.rootEl.isVisible();
             await userPage.usersButtons.createButton.click();
             await userPage.createUserForm.rootEl.isVisible();
@@ -29,7 +29,7 @@ test.describe('UI part testing', async () => {
             expect(await userPage.getUserCard(3).address.textContent()).toContain(updatedUser.address);
         }) 
         
-        test('Scenario 2 - Verify that the search user card is displayed correctly - search id user', async ({ userPage, page }) => {
+        test('Scenario 2 - Verify that the search user card is displayed correctly - search id user', async ({ userPage, page: _page }) => {
             await userPage.search.rootEl.isVisible();
             await userPage.getUserCard(3).id.isVisible();
             const userIdText = await userPage.getUserCard(3).id.textContent();
@@ -76,7 +76,7 @@ test.describe('UI part testing', async () => {
         await productsPage.open();
         })
 
-        test('Scenario 5 - Verify that the create product works correctly - create the product', async ({ productsPage, page }) => {
+        test('Scenario 5 - Verify that the create product works correctly - create the product', async ({ productsPage, page: _page }) => {
             await productsPage.productButtons.rootEl.isVisible();
             await productsPage.productButtons.createButton.click();
             await productsPage.createProductForm.rootEl.isVisible();
@@ -93,7 +93,7 @@ test.describe('UI part testing', async () => {
             expect(await productsPage.getProductsCard(6).price.textContent()).toContain(newProduct.price);
     })    
     
-        test('Scenario 6 - Verify that the search product card is displayed correctly - search id product', async ({ productsPage, page }) => {
+        test('Scenario 6 - Verify that the search product card is displayed correctly - search id product', async ({ productsPage, page: _page }) => {
             await productsPage.productButtons.rootEl.isVisible();
             await productsPage.getProductsCard(6).id.isVisible();
             const productAuthor = await productsPage.getProductsCard(6).author.textContent();
@@ -104,7 +104,7 @@ test.describe('UI part testing', async () => {
             expect(searchResulttext).toContain(productAuthor);
         })  
         
-        test('Scenario 7 - Verify that the changed data (only userName here) into edit form is saved correctly - edit user', async ({ productsPage, page }) => {
+        test('Scenario 7 - Verify that the changed data (only userName here) into edit form is saved correctly - edit user', async ({ productsPage, page: _page }) => {
             await productsPage.getProductsCard(6).id.isVisible();
             const oldName = await productsPage.getProductsCard(6).name.textContent();
             await productsPage.getProductsCard(6).editBtn.click();
@@ -225,7 +225,7 @@ test.describe('UI part testing', async () => {
         await bookstorePage.open();
             })
 
-        test('Scenario 11 - Verify that the create bookstore works correctly - create the bookstore', async ({ bookstorePage, page, productsPage}) => {
+        test('Scenario 11 - Verify that the create bookstore works correctly - create the bookstore', async ({ bookstorePage, page: _page, productsPage: _productsPage}) => {
             await bookstorePage.open();
             await bookstorePage.bookstoreButtons.rootEl.isVisible();
             await bookstorePage.bookstoreButtons.createButton.click();
