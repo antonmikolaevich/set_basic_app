@@ -13,7 +13,6 @@ describe("Bookshop API CRUD tests", () => {
             const response = await sendUserRequest("users", newUser, "post");
             expect(response.status).to.equal(201);
             expect(response.data.user).to.have.property("_id");
-
             createdUserId = response.data.user._id;
         })
 
