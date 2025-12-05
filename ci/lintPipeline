@@ -1,12 +1,18 @@
+properties([
+    pipelineTriggers([
+        pollSCM('H/5 * * * *')
+    ])
+])
+
 node {
     stage('install dependencies') {
-        git credentialsId: 'GIT_EPAM_PAT', url: 'https://git.epam.com/anton_rak/set_basic_api_js.git', branch: 'ci_branch_new'
+        git credentialsId: 'GIT_EPAM_PAT', url: 'https://git.epam.com/anton_rak/set_basic_api_js.git', branch: 'master'
         bat script: 'npm install'
     }
     stage('lint') {
         bat script: 'npm run lint'
     }
     stage('unit tests coverage') {
-        bat script: 'npm run unit_tests'
+        bat script: 'npm run unit_tests_coverage'
     }
 }
