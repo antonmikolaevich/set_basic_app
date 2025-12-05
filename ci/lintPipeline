@@ -1,9 +1,3 @@
-properties([
-    pipelineTriggers([
-        pollSCM('H/5 * * * *')
-    ])
-])
-
 node {
     stage('install dependencies') {
         git credentialsId: 'GIT_EPAM_PAT', url: 'https://git.epam.com/anton_rak/set_basic_api_js.git', branch: 'master'
