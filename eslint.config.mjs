@@ -20,6 +20,7 @@ export default [
     }
   },
   // Configuration for test files
+  
   {
     files: ["**/*.test.js", "**/*_tests.js", "**/tests/**/*.js"],
     languageOptions: {
