@@ -6,4 +6,7 @@ node {
     stage('lint') {
         bat script: 'npm run lint'
     }
+    stage('unit tests coverage') {
+        bat script: 'npm run unit_tests'
+    }
 }
