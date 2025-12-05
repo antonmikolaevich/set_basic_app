@@ -16,6 +16,9 @@ const mockRes = () => {
   return res;
 };
 
+let req;
+let res;
+
 describe('Booking Controller', () => {
   beforeEach(() => {
     jest.clearAllMocks();

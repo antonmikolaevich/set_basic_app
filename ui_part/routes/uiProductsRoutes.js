@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
-const Product = require("../../src/models/Products"); // your Mongoose model
+// const Product = require("../../src/models/Products"); // your Mongoose model
 
 const API_BASE = "http://localhost:5000/api";  // your API server
 

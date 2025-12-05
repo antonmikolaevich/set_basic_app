@@ -4,6 +4,7 @@ const { newUser, newUserUpd, newProduct, newProductUpd, userBooking, productBook
 let createdUserId;
 let createdProductId;
 let createdBookstoreItemId;
+let createdBookingId;
 
 
 describe("Bookshop API CRUD tests", () => {
@@ -31,7 +32,7 @@ describe("Bookshop API CRUD tests", () => {
         it('Get all users - /api/users [GET]', async () => {
             const response = await sendUserRequest("users");
             expect(response.status).to.equal(200);
-            expect(response.data).to.be.an('array');
+            expect(response.data).to.be.an('object');
         })
 
         it("Update user by ID - /api/users/:id [PUT]", async () => {
@@ -84,7 +85,7 @@ describe("Bookshop API CRUD tests", () => {
         it('Get all products - /api/products [GET]', async () => {
             const response = await sendUserRequest("products");
             expect(response.status).to.equal(200);
-            expect(response.data).to.be.an('array');
+            expect(response.data).to.be.an('object');
         })
 
         it("Update product by ID - /api/products/:id [PUT]", async () => {
@@ -158,7 +159,7 @@ describe("Bookshop API CRUD tests", () => {
         it('Get all bookings - /api/bookings [GET]', async () => {
             const response = await sendUserRequest("bookings");
             expect(response.status).to.equal(200);
-            expect(response.data).to.be.an('array');    
+            expect(response.data).to.be.an('object');    
         })
 
         it("Update booking by ID - /api/bookings/:id [PUT]", async () => {
@@ -245,7 +246,7 @@ describe("Bookshop API CRUD tests", () => {
         it('Get all bookstore items - /api/bookstore [GET]', async () => {
             const response = await sendUserRequest("bookstore");
             expect(response.status).to.equal(200);
-            expect(response.data).to.be.an('array');    
+            expect(response.data).to.be.an('object');    
         })
 
         it("Update bookstore item by ID - /api/bookstore/:id [PUT]", async () => {

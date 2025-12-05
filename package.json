@@ -8,7 +8,8 @@
     "unit_tests": "jest --config ./jest.config.js --coverage",
     "set_roles": "node ./scripts/seedRoles.js",
     "set_booking_statuses": "node ./scripts/seedBookingStatuses.js",
-    "start_server": "node src/app.js"
+    "start_server": "node src/app.js",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,9 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
     "jest": "^30.2.0"
   }
 }
