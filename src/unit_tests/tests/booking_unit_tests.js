@@ -196,56 +196,73 @@ describe('Booking Controller', () => {
   // ---------- GET BOOKINGS ----------
   describe('getBookings', () => {
    it('should return all bookings', async () => {
-  const req = {};
+  const req = { query: {} };
   const res = mockRes();
 
   const mockBookings = [{ id: 1 }];
 
-  // Build a proper populate chain
-  const populateChain = { populate: jest.fn().mockReturnThis() };
-  populateChain.populate
-    .mockReturnValueOnce(populateChain) // first .populate()
-    .mockReturnValueOnce(populateChain) // second .populate()
-    .mockReturnValueOnce(Promise.resolve(mockBookings)); // final .populate() resolves to mockBookings
-
-  // Make Booking.find return that chain
-  Booking.find.mockReturnValue(populateChain);
+  // Mock countDocuments and the chain: find().populate().populate().populate().skip().limit()
+  Booking.countDocuments = jest.fn().mockResolvedValue(10);
+  Booking.find = jest.fn().mockReturnValue({
+    populate: jest.fn().mockReturnValue({
+      populate: jest.fn().mockReturnValue({
+        populate: jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockResolvedValue(mockBookings)
+          })
+        })
+      })
+    })
+  });
 
   await bookingController.getBookings(req, res);
 
   expect(res.status).toHaveBeenCalledWith(200);
-  expect(res.json).toHaveBeenCalledWith(mockBookings);
+  expect(res.json).toHaveBeenCalledWith({
+    bookings: mockBookings,
+    page: 1,
+    totalPages: 4
+  });
 });
 
 
     it('should handle database error', async () => {
-      const req = {}, res = mockRes();
+      const req = { query: {} }, res = mockRes();
       Booking.find.mockImplementation(() => { throw new Error('err'); });
       await bookingController.getBookings(req, res);
       expect(res.status).toHaveBeenCalledWith(500);
     });
 
     it('should return 200 and list of bookings successfully', async () => {
-  const req = {};
+  const req = { query: {} };
   const res = mockRes();
 
-  // Properly chain populate() and resolve a value
-  const mockPopulate = jest.fn().mockReturnThis();
   const mockResolvedBookings = [{ _id: 'b1', user_id: 'u1' }];
 
-  Booking.find.mockReturnValue({
-    populate: mockPopulate,
-    then: (resolve) => resolve(mockResolvedBookings) // supports await
+  // Mock countDocuments and the chain: find().populate().populate().populate().skip().limit()
+  Booking.countDocuments = jest.fn().mockResolvedValue(10);
+  Booking.find = jest.fn().mockReturnValue({
+    populate: jest.fn().mockReturnValue({
+      populate: jest.fn().mockReturnValue({
+        populate: jest.fn().mockReturnValue({
+          skip: jest.fn().mockReturnValue({
+            limit: jest.fn().mockResolvedValue(mockResolvedBookings)
+          })
+        })
+      })
+    })
   });
 
   await bookingController.getBookings(req, res);
 
   expect(res.status).toHaveBeenCalledWith(200);
-  expect(res.json).toHaveBeenCalledWith(
-    expect.arrayContaining([
+  expect(res.json).toHaveBeenCalledWith({
+    bookings: expect.arrayContaining([
       expect.objectContaining({ _id: 'b1' })
-    ])
-  );
+    ]),
+    page: 1,
+    totalPages: 4
+  });
 });
   });
 

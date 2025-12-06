@@ -372,7 +372,7 @@ describe('getAllUsers controller', () => {
   let mockReq, mockRes;
 
   beforeEach(() => {
-    mockReq = {}; // no params or body needed
+    mockReq = { query: {} }; // no params or body needed
     mockRes = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -386,25 +386,32 @@ describe('getAllUsers controller', () => {
       { name: 'Jane', email: 'jane@example.com', role_id: { name: 'User' } },
     ];
 
-    User.find.mockReturnValue({
-      populate: jest.fn().mockResolvedValue(mockUsers)
+    // Mock countDocuments and the chain: find().populate().skip().limit()
+    User.countDocuments = jest.fn().mockResolvedValue(10);
+    User.find = jest.fn().mockReturnValue({
+      populate: jest.fn().mockReturnValue({
+        skip: jest.fn().mockReturnValue({
+          limit: jest.fn().mockResolvedValue(mockUsers)
+        })
+      })
     });
 
     await getAllUsers(mockReq, mockRes);
 
     expect(User.find).toHaveBeenCalled();
     expect(mockRes.status).toHaveBeenCalledWith(200);
-    expect(mockRes.json).toHaveBeenCalledWith(mockUsers);
+    expect(mockRes.json).toHaveBeenCalledWith({
+      users: mockUsers,
+      page: 1,
+      totalPages: 4
+    });
   });
 
   test('should return 500 if database throws error', async () => {
-    User.find.mockReturnValue({
-      populate: jest.fn().mockRejectedValue(new Error('Database error'))
-    });
+    User.countDocuments = jest.fn().mockRejectedValue(new Error('Database error'));
 
     await getAllUsers(mockReq, mockRes);
 
-    expect(User.find).toHaveBeenCalled();
     expect(mockRes.status).toHaveBeenCalledWith(500);
     expect(mockRes.json).toHaveBeenCalledWith(
       expect.objectContaining({
