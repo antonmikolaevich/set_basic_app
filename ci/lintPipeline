@@ -7,12 +7,12 @@ properties([
 node {
     stage('install dependencies') {
         git credentialsId: 'GIT_EPAM_PAT', url: 'https://git.epam.com/anton_rak/set_basic_api_js.git', branch: 'master'
-        bat script: 'npm install'
+        sh 'npm install'
     }
     stage('lint') {
-        bat script: 'npm run lint'
+        sh 'npm run lint'
     }
     stage('unit tests coverage') {
-        bat script: 'npm run unit_tests_coverage'
+        sh 'npm run unit_tests_coverage'
     }
 }
