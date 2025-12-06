@@ -15,8 +15,8 @@ node {
         // Start API server in background
         sh 'npm run start_server &'
 
-        // Optional: start UI part
-        sh 'cd ui_part && node app.js &'
+        // // Optional: start UI part
+        // sh 'cd ui_part && node app.js &'
 
         // Give servers a few seconds to start
         sh 'sleep 5'
@@ -25,7 +25,7 @@ node {
     stage('lint') {
         sh 'npm run lint'
     }
-    // stage('unit tests coverage') {
-    //     sh 'npm run unit_tests_coverage'
-    // }
+    stage('unit tests coverage') {
+        sh 'npm run unit_tests_coverage'
+    }
 }
