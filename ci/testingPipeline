@@ -21,9 +21,6 @@ pipeline {
                 sh 'npm run lint'
             }
         }
-
-
-
         // stage('Unit tests with coverage') {
         //     steps {
         //         sh 'npm run unit_tests_coverage'
