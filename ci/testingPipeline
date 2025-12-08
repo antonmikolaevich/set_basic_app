@@ -1,10 +1,14 @@
 pipeline {
     agent any
 
+    environment {
+        // Inject secret globally if you want
+        MONGO_URI = credentials('MONGO_URI')
+    }
+
     stages {
         stage('Install dependencies') {
             steps {
-                // Clone repo and install dependencies
                 git credentialsId: 'GITHUB_PAT', 
                     url: 'https://github.com/antonmikolaevich/set_basic_app.git', 
                     branch: 'master'
@@ -18,38 +22,14 @@ pipeline {
                 bat 'npm run lint'
             }
         }
-        // stage('Unit tests with coverage') {
-        //     steps {
-        //         sh 'npm run unit_tests_coverage'
-        //     }
-        // }
-
-        // stage('Unit tests') {
-        //     steps {
-        //         sh 'npm run unit_tests'
-        //     }
-        // }
-        
 
         stage('API tests') {
             steps {
-                withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')])
-                bat 'npm install'
-                bat 'npm run start_server &'   // start in background
-                bat 'sleep 15'                  // wait for server to start
+                // Start server and run tests
+                bat 'start /B npm run start_server'   // run in background
+                bat 'timeout /T 15 /NOBREAK'         // wait 15 seconds
                 bat 'npm run api_tests'
             }
         }
     }
-
-    // post {
-    //     success {
-    //         echo "All quality gates passed."
-    //         githubNotify context: 'Testing Pipeline', status: 'SUCCESS'
-    //     }
-    //     failure {
-    //         echo "Quality gate failed."
-    //         githubNotify context: 'Testing Pipeline', status: 'FAILURE'
-    //     }
-    // }
 }
