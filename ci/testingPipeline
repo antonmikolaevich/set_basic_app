@@ -10,9 +10,6 @@ pipeline {
                     branch: 'master'
                 
                 bat 'npm install'
-                
-                // Start API server in background
-                bat 'npm run start_server &'
             }
         }
 
