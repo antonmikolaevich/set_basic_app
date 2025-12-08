@@ -38,12 +38,14 @@ node {
 }
 
 post {
+    post {
     success {
         echo "All quality gates passed."
-        githubNotify context: 'ci/quality-gates', status: 'SUCCESS'
+        githubNotify context: 'Testing Pipeline', status: 'SUCCESS'
     }
     failure {
         echo "Quality gate failed."
-        githubNotify context: 'ci/quality-gates', status: 'FAILURE'
+        githubNotify context: 'Testing Pipeline', status: 'FAILURE'
     }
+}
 }
