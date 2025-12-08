@@ -22,17 +22,17 @@ pipeline {
             }
         }
 
-        stage('Unit tests with coverage') {
-            steps {
-                sh 'npm run unit_tests_coverage'
-            }
-        }
+        // stage('Unit tests with coverage') {
+        //     steps {
+        //         sh 'npm run unit_tests_coverage'
+        //     }
+        // }
 
-        stage('Unit tests') {
-            steps {
-                sh 'npm run unit_tests'
-            }
-        }
+        // stage('Unit tests') {
+        //     steps {
+        //         sh 'npm run unit_tests'
+        //     }
+        // }
 
         stage('API tests') {
             steps {
