@@ -2,17 +2,19 @@ pipeline {
     agent any
 
     environment {
-        // Inject secret globally if you want
+        // Inject MONGO_URI from Jenkins Secret Text credential
         MONGO_URI = credentials('MONGO_URI')
     }
 
     stages {
-        stage('Install dependencies') {
+        stage('Clone Repository & Install Dependencies') {
             steps {
+                // Clone repo using GitHub credentials
                 git credentialsId: 'GITHUB_PAT', 
                     url: 'https://github.com/antonmikolaevich/set_basic_app.git', 
                     branch: 'master'
                 
+                // Install npm dependencies
                 bat 'npm install'
             }
         }
@@ -23,13 +25,26 @@ pipeline {
             }
         }
 
-        stage('API tests') {
+        stage('Start Server & Run API Tests') {
             steps {
-                // Start server and run tests
-                bat 'start /B npm run start_server'   // run in background
-                bat 'timeout /T 15 /NOBREAK'         // wait 15 seconds
+                // Start server in background safely on Windows
+                bat 'start /B cmd /c "npm run start_server > server.log 2>&1"'
+
+                // Wait 15 seconds for server to start
+                bat 'timeout /T 15 /NOBREAK'
+
+                // Run API tests
                 bat 'npm run api_tests'
             }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline finished successfully."
+        }
+        failure {
+            echo "Pipeline failed."
         }
     }
 }
