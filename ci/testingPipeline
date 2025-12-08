@@ -1,0 +1,49 @@
+properties([
+    pipelineTriggers([
+        // Trigger pipeline when a Pull Request event occurs
+        githubPullRequest()
+    ])
+])
+
+node {
+
+    stage('install dependencies') {
+        // Clone the repo
+        git credentialsId: 'GIT_EPAM_PAT', 
+            url: 'https://git.epam.com/anton_rak/set_basic_api_js.git', 
+            branch: 'master'
+
+        // Install dependencies for API
+        sh 'npm install'
+
+        // Start API server in background
+        sh 'npm run start_server'
+    }
+
+    stage('lint') {
+        sh 'npm run lint'
+    }
+
+    stage('unit tests coverage') {
+        sh 'npm run unit_tests_coverage'
+    }
+
+    stage('unit tests') {
+        sh 'npm run unit_tests'
+    }
+
+    stage('API tests') {
+        sh 'npm run api_tests'
+    }
+}
+
+post {
+    success {
+        echo "All quality gates passed."
+        githubNotify context: 'ci/quality-gates', status: 'SUCCESS'
+    }
+    failure {
+        echo "Quality gate failed."
+        githubNotify context: 'ci/quality-gates', status: 'FAILURE'
+    }
+}

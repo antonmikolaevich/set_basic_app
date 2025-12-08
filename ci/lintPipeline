@@ -25,7 +25,7 @@ node {
     stage('lint') {
         sh 'npm run lint'
     }
-    stage('unit tests coverage') {
-        sh 'npm run unit_tests_coverage'
-    }
+    // stage('unit tests coverage') {
+    //     sh 'npm run unit_tests_coverage'
+    // }
 }
