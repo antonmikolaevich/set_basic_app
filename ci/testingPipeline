@@ -1,42 +1,73 @@
 pipeline {
+
     agent any
 
-    environment {
-        MONGO_URI = credentials('MONGO_URI')
+    // Trigger on Pull Request activity
+    triggers {
+        githubPullRequest()
     }
 
     stages {
-        stage('Clone & Install Dependencies') {
+
+        stage('Checkout & Install') {
             steps {
                 git credentialsId: 'GITHUB_PAT',
                     url: 'https://github.com/antonmikolaevich/set_basic_app.git',
                     branch: 'master'
 
-                bat 'npm install'
+                sh 'npm install'
             }
         }
 
         stage('Lint') {
             steps {
-                bat 'npm run lint'
+                sh 'npm run lint'
             }
         }
 
+        // stage('Unit Tests Coverage') {
+        //     steps {
+        //         sh 'npm run unit_tests_coverage'
+        //     }
+        // }
+
+        // stage('Unit Tests') {
+        //     steps {
+        //         sh 'npm run unit_tests'
+        //     }
+        // }
+
         stage('API Tests') {
-    steps {
-        withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
-            bat 'npm run api_tests'
+            steps {
+                withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
+
+                    // Start server in background with correct env
+                    sh '''
+                        echo "Starting API server..."
+                        MONGO_URI="$MONGO_URI" npm run start_server &
+                        SERVER_PID=$!
+                        echo "Server PID: $SERVER_PID"
+
+                        sleep 15
+                        echo "Running API tests..."
+                        npm run api_tests
+
+                        echo "Stopping API server..."
+                        kill $SERVER_PID || true
+                    '''
+                }
+            }
         }
-    }
-}
     }
 
     post {
         success {
-            echo "Pipeline finished successfully."
+            echo "All quality gates passed."
+            githubNotify context: 'Testing Pipeline', status: 'SUCCESS'
         }
         failure {
-            echo "Pipeline failed."
+            echo "Quality gate failed."
+            githubNotify context: 'Testing Pipeline', status: 'FAILURE'
         }
     }
 }

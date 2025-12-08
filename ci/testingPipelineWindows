@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    environment {
+        MONGO_URI = credentials('MONGO_URI')
+    }
+
+    stages {
+        stage('Clone & Install Dependencies') {
+            steps {
+                git credentialsId: 'GITHUB_PAT',
+                    url: 'https://github.com/antonmikolaevich/set_basic_app.git',
+                    branch: 'master'
+
+                bat 'npm install'
+            }
+        }
+
+        stage('Lint') {
+            steps {
+                bat 'npm run lint'
+            }
+        }
+
+        stage('API Tests') {
+    steps {
+        withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
+            bat 'npm run api_tests'
+        }
+    }
+}
+    }
+
+    post {
+        success {
+            echo "Pipeline finished successfully."
+        }
+        failure {
+            echo "Pipeline failed."
+        }
+    }
+}
