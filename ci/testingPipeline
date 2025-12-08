@@ -22,18 +22,13 @@ pipeline {
             }
         }
 
-        stage('Run Server & API Tests') {
-            steps {
-                withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
-                    // Start Node server in the background using PowerShell
-                    powershell """
-                    Start-Process -NoNewWindow -FilePath npm -ArgumentList 'run start_server'
-                    Start-Sleep -Seconds 15
-                    npm run api_tests
-                    """
-                }
-            }
+        stage('API Tests') {
+    steps {
+        withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
+            bat 'npm run api_tests'
         }
+    }
+}
     }
 
     post {
