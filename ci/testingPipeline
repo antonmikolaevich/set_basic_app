@@ -9,16 +9,16 @@ pipeline {
                     url: 'https://github.com/antonmikolaevich/set_basic_app.git', 
                     branch: 'master'
                 
-                sh 'npm install'
+                bat 'npm install'
                 
                 // Start API server in background
-                sh 'npm run start_server &'
+                bat 'npm run start_server &'
             }
         }
 
         stage('Lint') {
             steps {
-                sh 'npm run lint'
+                bat 'npm run lint'
             }
         }
         // stage('Unit tests with coverage') {
@@ -36,22 +36,22 @@ pipeline {
 
         stage('API tests') {
             steps {
-                sh 'npm install'
-                sh 'npm run start_server &'   // start in background
-                sh 'sleep 15'                  // wait for server to start
-                sh 'npm run api_tests'
+                bat 'npm install'
+                bat 'npm run start_server &'   // start in background
+                bat 'sleep 15'                  // wait for server to start
+                bat 'npm run api_tests'
             }
         }
     }
 
-    post {
-        success {
-            echo "All quality gates passed."
-            githubNotify context: 'Testing Pipeline', status: 'SUCCESS'
-        }
-        failure {
-            echo "Quality gate failed."
-            githubNotify context: 'Testing Pipeline', status: 'FAILURE'
-        }
-    }
+    // post {
+    //     success {
+    //         echo "All quality gates passed."
+    //         githubNotify context: 'Testing Pipeline', status: 'SUCCESS'
+    //     }
+    //     failure {
+    //         echo "Quality gate failed."
+    //         githubNotify context: 'Testing Pipeline', status: 'FAILURE'
+    //     }
+    // }
 }
