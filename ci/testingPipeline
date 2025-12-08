@@ -6,11 +6,12 @@ pipeline {
     }
 
     stages {
-        stage('Clone & Install') {
+        stage('Clone & Install Dependencies') {
             steps {
                 git credentialsId: 'GITHUB_PAT',
                     url: 'https://github.com/antonmikolaevich/set_basic_app.git',
                     branch: 'master'
+
                 bat 'npm install'
             }
         }
@@ -21,20 +22,26 @@ pipeline {
             }
         }
 
-        stage('API Tests') {
+        stage('Run Server & API Tests') {
             steps {
                 withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
-                    bat 'start "" /B cmd /C "npm run start_server > server.log 2>&1"'
-                    bat 'timeout /T 15 /NOBREAK'
-                    bat 'npm run api_tests'
-                    bat 'taskkill /IM node.exe /F'  // optional cleanup
+                    // Start Node server in the background using PowerShell
+                    powershell """
+                    Start-Process -NoNewWindow -FilePath npm -ArgumentList 'run start_server'
+                    Start-Sleep -Seconds 15
+                    npm run api_tests
+                    """
                 }
             }
         }
     }
 
     post {
-        success { echo "Pipeline finished successfully." }
-        failure { echo "Pipeline failed." }
+        success {
+            echo "Pipeline finished successfully."
+        }
+        failure {
+            echo "Pipeline failed."
+        }
     }
 }
