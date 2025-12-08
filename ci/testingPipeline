@@ -5,8 +5,8 @@ pipeline {
         stage('Install dependencies') {
             steps {
                 // Clone repo and install dependencies
-                git credentialsId: 'GIT_EPAM_PAT', 
-                    url: 'https://git.epam.com/anton_rak/set_basic_api_js.git', 
+                git credentialsId: 'GITHUB_PAT', 
+                    url: 'https://github.com/antonmikolaevich/set_basic_app.git', 
                     branch: 'master'
                 
                 sh 'npm install'
@@ -21,9 +21,6 @@ pipeline {
                 sh 'npm run lint'
             }
         }
-
-
-
         // stage('Unit tests with coverage') {
         //     steps {
         //         sh 'npm run unit_tests_coverage'
