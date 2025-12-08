@@ -36,3 +36,14 @@
 - Swagger for API documentation
 - mocha and chai for testing
 - Jest for unit testing
+
+
+### Adding webhooks into github
+1. Go to your repository on GitHub.
+2. Click on "Settings" in the top menu.
+3. In the left sidebar, click on "Webhooks".
+4. Click the "Add webhook" button.
+5. In the "Payload URL" field, enter the URL where you want to receive the webhook payloads.
+6. In the "Content type" dropdown, select "application/json".
+7. Choose the events you want to trigger the webhook. You can select "Just the push event" or "Let me select individual events".
+8. Click the "Add webhook" button to save your webhook.  
