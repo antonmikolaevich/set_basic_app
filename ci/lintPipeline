@@ -7,7 +7,7 @@ properties([
 node {
     stage('install dependencies') {
         // Clone the repo
-        git credentialsId: 'GIT_EPAM_PAT', url: 'https://git.epam.com/anton_rak/set_basic_api_js.git', branch: 'master'
+        git credentialsId: 'GITHUB_PAT', url: 'https://github.com/antonmikolaevich/set_basic_app.git', branch: 'master'
 
         // Install dependencies for API
         sh 'npm install'
@@ -27,7 +27,7 @@ node {
     }
 
 
-    
+
     // stage('unit tests coverage') {
     //     sh 'npm run unit_tests_coverage'
     // }
