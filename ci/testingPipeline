@@ -36,6 +36,8 @@ pipeline {
 
         stage('API tests') {
             steps {
+                sh 'npm install'
+                sh 'npm run start_server'
                 sh 'npm run api_tests'
             }
         }
