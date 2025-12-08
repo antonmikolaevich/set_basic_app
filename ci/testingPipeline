@@ -1,51 +1,54 @@
-properties([
-    pipelineTriggers([
-        // Trigger pipeline when a Pull Request event occurs
-        githubPullRequest()
-    ])
-])
+pipeline {
+    agent any
 
-node {
+    stages {
+        stage('Install dependencies') {
+            steps {
+                // Clone repo and install dependencies
+                git credentialsId: 'GIT_EPAM_PAT', 
+                    url: 'https://git.epam.com/anton_rak/set_basic_api_js.git', 
+                    branch: 'master'
+                
+                sh 'npm install'
+                
+                // Start API server in background
+                sh 'npm run start_server &'
+            }
+        }
 
-    stage('install dependencies') {
-        // Clone the repo
-        git credentialsId: 'GIT_EPAM_PAT', 
-            url: 'https://git.epam.com/anton_rak/set_basic_api_js.git', 
-            branch: 'master'
+        stage('Lint') {
+            steps {
+                sh 'npm run lint'
+            }
+        }
 
-        // Install dependencies for API
-        sh 'npm install'
+        stage('Unit tests with coverage') {
+            steps {
+                sh 'npm run unit_tests_coverage'
+            }
+        }
 
-        // Start API server in background
-        sh 'npm run start_server'
+        stage('Unit tests') {
+            steps {
+                sh 'npm run unit_tests'
+            }
+        }
+
+        stage('API tests') {
+            steps {
+                sh 'npm run api_tests'
+            }
+        }
     }
 
-    stage('lint') {
-        sh 'npm run lint'
-    }
-
-    stage('unit tests coverage') {
-        sh 'npm run unit_tests_coverage'
-    }
-
-    stage('unit tests') {
-        sh 'npm run unit_tests'
-    }
-
-    stage('API tests') {
-        sh 'npm run api_tests'
-    }
-}
-
-post {
     post {
-    success {
-        echo "All quality gates passed."
-        githubNotify context: 'Testing Pipeline', status: 'SUCCESS'
+        success {
+            echo "All quality gates passed."
+            githubNotify context: 'Testing Pipeline', status: 'SUCCESS'
+        }
+        failure {
+            echo "Quality gate failed."
+            githubNotify context: 'Testing Pipeline', status: 'FAILURE'
+        }
     }
-    failure {
-        echo "Quality gate failed."
-        githubNotify context: 'Testing Pipeline', status: 'FAILURE'
-    }
-}
 }
