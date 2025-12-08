@@ -38,7 +38,8 @@ pipeline {
         stage('API tests') {
             steps {
                 sh 'npm install'
-                sh 'npm run start_server'
+                sh 'npm run start_server &'   // start in background
+                sh 'sleep 15'                  // wait for server to start
                 sh 'npm run api_tests'
             }
         }
