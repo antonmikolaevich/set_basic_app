@@ -33,6 +33,7 @@ pipeline {
 
         stage('API tests') {
             steps {
+                withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')])
                 bat 'npm install'
                 bat 'npm run start_server &'   // start in background
                 bat 'sleep 15'                  // wait for server to start
