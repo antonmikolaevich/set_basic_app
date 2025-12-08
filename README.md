@@ -36,3 +36,11 @@
 - Swagger for API documentation
 - mocha and chai for testing
 - Jest for unit testing
+
+### How to run unit tests
+1. Make sure you have Jest installed as a dev dependency.
+2. Run the command `npm run unit_tests` to execute the unit tests.
+### How to run API tests
+1. Make sure you have mocha and chai installed as dev dependencies.
+2. Run the command `npm run api_tests` to execute the API tests.
+3. The test results will be displayed in the terminal.
