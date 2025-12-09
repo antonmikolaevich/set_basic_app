@@ -106,20 +106,24 @@ pipeline {
 
 
     post {
-        success {
-            echo "All quality gates passed."
-            publishChecks name: 'Testing Pipeline',
-                          status: 'COMPLETED',      // string, not enum
-                          conclusion: 'SUCCESS',    // string, not enum
-                          text: 'All quality gates passed successfully. The build finished without issues.'
-        }
-
-        failure {
-            echo "Quality gate failed."
-            publishChecks name: 'Testing Pipeline',
-                          status: 'COMPLETED',      // string, not enum
-                          conclusion: 'FAILURE',    // string, not enum
-                          text: 'One or more stages failed. Check the Jenkins logs for details.'
-        }
+    success {
+        echo "All quality gates passed."
+        // Set commit status on the PR using PAT
+        setGitHubPullRequestStatus(
+            status: 'SUCCESS',       // SUCCESS, FAILURE, or PENDING
+            context: 'Jenkins CI',  // The label shown in PR checks
+            description: 'All quality gates passed.'
+        )
     }
+
+    failure {
+        echo "Quality gate failed."
+        setGitHubPullRequestStatus(
+            status: 'FAILURE',
+            context: 'Jenkins CI',
+            description: 'One or more stages failed.'
+        )
+    }
+}
+
 }
