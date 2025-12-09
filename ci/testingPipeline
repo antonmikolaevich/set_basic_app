@@ -121,6 +121,7 @@ post {
             """
         }
     }
+    
 
     failure {
         echo "Quality gate failed."
