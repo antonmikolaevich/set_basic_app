@@ -35,7 +35,7 @@ pipeline {
         //     }
         // }
 
-        
+
 
         stage('API Tests') {
             steps {
@@ -48,7 +48,7 @@ pipeline {
                         SERVER_PID=$!
                         echo "Server PID: $SERVER_PID"
 
-                        sleep 15
+                        sleep 5
                         echo "Running API tests..."
                         npm run api_tests
 
