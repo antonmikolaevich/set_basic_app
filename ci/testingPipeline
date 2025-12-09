@@ -48,6 +48,7 @@ pipeline {
             }
         }
 
+
         stage('Unit Tests') {
             steps {
                 lock(resource: 'mongo-db-access') {
@@ -110,17 +111,27 @@ pipeline {
     post {
     success {
         echo "All quality gates passed."
-        setGitHubPullRequestStatus(
-            state: 'SUCCESS',
-            context: 'Testing Pipeline'
-        )
+        publishChecks name: 'Testing Pipeline',
+                      status: 'completed',
+                      conclusion: 'success',
+                      output: [
+                        title: 'Pipeline Success',
+                        summary: 'All quality gates passed successfully.',
+                        text: 'The build finished without issues.'
+                      ]
     }
+
     failure {
         echo "Quality gate failed."
-        setGitHubPullRequestStatus(
-            state: 'FAILURE',
-            context: 'Testing Pipeline'
-        )
+        publishChecks name: 'Testing Pipeline',
+                      status: 'completed',
+                      conclusion: 'failure',
+                      output: [
+                        title: 'Pipeline Failed',
+                        summary: 'One or more stages failed.',
+                        text: 'Check the Jenkins logs for the specific failure.'
+                      ]
     }
 }
+
 }
