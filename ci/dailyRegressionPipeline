@@ -22,24 +22,23 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
                     sh '''
-                        # Show current workspace structure
+                        # Show workspace structure
                         echo "Current directory: $(pwd)"
                         echo "Files and folders in workspace:"
                         ls -R
 
-                        # Setup MongoDB roles and statuses
+                        # Setup MongoDB roles and booking statuses
                         echo "Setting up roles..."
                         MONGO_URI="$MONGO_URI" npm run set_roles
 
                         echo "Setting up booking statuses..."
                         MONGO_URI="$MONGO_URI" npm run set_booking_statuses
 
-                        # Start API server
+                        # Start API server in background
                         echo "Starting API server..."
                         MONGO_URI="$MONGO_URI" npm run start_server &
                         API_PID=$!
                         echo $API_PID > api_server_pid.txt
-
                         sleep 10
                         echo "After sleep 10, current directory: $(pwd)"
 
@@ -54,7 +53,6 @@ pipeline {
                         nohup node app.js > ../ui.log 2>&1 &
                         UI_PID=$!
                         echo $UI_PID > ../ui_pid.txt
-
                         sleep 5
 
                         # Run UI tests
@@ -65,7 +63,7 @@ pipeline {
                         npm install
 
                         echo "Installing Playwright browsers..."
-                        npx playwright install
+                        npx playwright install --if-not-installed
 
                         echo "Running UI tests..."
                         npm run test
