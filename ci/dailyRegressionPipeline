@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+
+    // This pipeline is triggered via schedule (configured in Jenkins UI)
+    options {
+        // Optional: ensures only one run of this pipeline at a time
+        lock(resource: 'set_basic_app-daily-lock')
+    }
+
+    stages {
+        stage('Checkout & Install') {
+            steps {
+                git credentialsId: 'GITHUB_PAT',
+                    url: 'https://github.com/antonmikolaevich/set_basic_app.git',
+                    branch: 'master'
+
+                sh 'npm install'
+            }
+        }
+
+        stage('UI Pipeline') {
+            steps {
+                script {
+                    sh '''
+                        # Start API server in background
+                        echo "Starting API server..."
+                        npm run start_server &
+                        API_PID=$!
+                        echo $API_PID > server_pid.txt
+                        sleep 5
+
+                        # Start UI server in background
+                        echo "Starting UI app..."
+                        cd ui_part
+                        nohup node app.js > ui.log 2>&1 &
+                        UI_PID=$!
+                        echo $UI_PID > ../ui_pid.txt
+                        cd ..
+
+                        sleep 5
+
+                        # Run UI tests
+                        echo "Running UI tests..."
+                        cd ui_testing
+                        npm install
+                        npm test
+                        cd ..
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Stop API and UI servers if still running
+                sh '''
+                    if [ -f server_pid.txt ]; then
+                        kill $(cat server_pid.txt) || true
+                        rm server_pid.txt
+                    fi
+                    if [ -f ui_pid.txt ]; then
+                        kill $(cat ui_pid.txt) || true
+                        rm ui_pid.txt
+                    fi
+                '''
+
+                // Publish UI test HTML report
+                publishHTML([
+                    reportName: 'UI Test Report',
+                    reportDir: 'ui_testing/playwright-report',
+                    reportFiles: 'index.html',
+                    keepAll: true,
+                    alwaysLinkToLastBuild: true,
+                    allowMissing: false
+                ])
+            }
+        }
+    }
+}
