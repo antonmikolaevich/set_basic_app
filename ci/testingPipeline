@@ -111,13 +111,21 @@ pipeline {
     }
 
     post {
-        success {
-            echo "All quality gates passed."
-            githubNotify context: 'Testing Pipeline', status: 'SUCCESS'
-        }
-        failure {
-            echo "Quality gate failed."
-            githubNotify context: 'Testing Pipeline', status: 'FAILURE'
-        }
+    success {
+        echo "All quality gates passed."
+        setGitHubPullRequestStatus(
+            context: 'Testing Pipeline',
+            status: 'SUCCESS',
+            description: 'All quality gates passed.'
+        )
     }
+    failure {
+        echo "Quality gate failed."
+        setGitHubPullRequestStatus(
+            context: 'Testing Pipeline',
+            status: 'FAILURE',
+            description: 'Quality gate failed.'
+        )
+    }
+}
 }
