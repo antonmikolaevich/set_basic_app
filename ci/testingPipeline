@@ -17,8 +17,12 @@ pipeline {
         stage('Lint') {
             steps {
                 sh 'npm run lint'
+                sh 'curl https://ifconfig.me'
             }
         }
+
+
+
 
         // stage('Unit Tests Coverage') {
         //     steps {
@@ -31,6 +35,8 @@ pipeline {
         //         sh 'npm run unit_tests'
         //     }
         // }
+
+
 
         stage('API Tests') {
             steps {
