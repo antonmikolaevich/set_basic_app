@@ -19,46 +19,90 @@ pipeline {
             }
         }
 
+        stage('Unit Tests Coverage') {
+            steps {
+                lock(resource: 'mongo-db-access') {
+                    withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
 
-        // stage('Unit Tests Coverage') {
-        //     steps {
-        //         sh 'npm run unit_tests_coverage'
-        //     }
-        // }
+                        sh '''
+                            echo "Setting up roles..."
+                            MONGO_URI="$MONGO_URI" npm run set_roles
 
-        // stage('Unit Tests') {
-        //     steps {
-        //         sh 'npm run unit_tests'
-        //     }
-        // }
+                            echo "Setting up booking statuses..."
+                            MONGO_URI="$MONGO_URI" npm run set_booking_statuses
+
+                            echo "Starting API server for Unit Tests Coverage..."
+                            MONGO_URI="$MONGO_URI" npm run start_server &
+                            SERVER_PID=$!
+                            echo "Started server with PID: $SERVER_PID"
+
+                            sleep 15
+                            echo "Running Unit Test Coverage..."
+                            npm run unit_tests_coverage
+
+                            echo "Stopping API server..."
+                            kill $SERVER_PID || true
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                lock(resource: 'mongo-db-access') {
+                    withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
+
+                        sh '''
+                            echo "Setting up roles..."
+                            MONGO_URI="$MONGO_URI" npm run set_roles
+
+                            echo "Setting up booking statuses..."
+                            MONGO_URI="$MONGO_URI" npm run set_booking_statuses
+
+                            echo "Starting API server for Unit Tests..."
+                            MONGO_URI="$MONGO_URI" npm run start_server &
+                            SERVER_PID=$!
+                            echo "Started server with PID: $SERVER_PID"
+
+                            sleep 15
+                            echo "Running Unit Tests..."
+                            npm run unit_tests
+
+                            echo "Stopping API server..."
+                            kill $SERVER_PID || true
+                        '''
+                    }
+                }
+            }
+        }
 
         stage('API Tests') {
             steps {
                 lock(resource: 'mongo-db-access') {
-                withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
+                    withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
 
-                    // Run setup scripts and start server in background
-                    sh '''
-                        echo "Setting up roles..."
-                        MONGO_URI="$MONGO_URI" npm run set_roles
+                        sh '''
+                            echo "Setting up roles..."
+                            MONGO_URI="$MONGO_URI" npm run set_roles
 
-                        echo "Setting up booking statuses..."
-                        MONGO_URI="$MONGO_URI" npm run set_booking_statuses
+                            echo "Setting up booking statuses..."
+                            MONGO_URI="$MONGO_URI" npm run set_booking_statuses
 
-                        echo "Starting API server..."
-                        MONGO_URI="$MONGO_URI" npm run start_server &
-                        SERVER_PID=$!
-                        echo "Server PID: $SERVER_PID"
+                            echo "Starting API server..."
+                            MONGO_URI="$MONGO_URI" npm run start_server &
+                            SERVER_PID=$!
+                            echo "Started server with PID: $SERVER_PID"
 
-                        sleep 15
-                        echo "Running API tests..."
-                        npm run api_tests
+                            sleep 15
+                            echo "Running API Tests..."
+                            npm run api_tests
 
-                        echo "Stopping API server..."
-                        kill $SERVER_PID || true
-                    '''
+                            echo "Stopping API server..."
+                            kill $SERVER_PID || true
+                        '''
+                    }
                 }
-            }
             }
         }
     }
