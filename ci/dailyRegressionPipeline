@@ -1,13 +1,13 @@
 pipeline {
     agent any
 
-    // This pipeline is triggered via schedule (configured in Jenkins UI)
-    options {
-        // Optional: ensures only one run of this pipeline at a time
-        lock(resource: 'set_basic_app-daily-lock')
+    // Trigger once per day, can also be set in the Jenkins Configure tab
+    triggers {
+        cron('H H * * *')  // Runs once a day at a random hour
     }
 
     stages {
+
         stage('Checkout & Install') {
             steps {
                 git credentialsId: 'GITHUB_PAT',
@@ -18,25 +18,37 @@ pipeline {
             }
         }
 
-        stage('UI Pipeline') {
+        stage('Lint') {
             steps {
-                script {
+                sh 'npm run lint'
+            }
+        }
+
+        stage('API + UI Setup & Tests') {
+            steps {
+                withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
                     sh '''
+                        # Setup MongoDB roles and booking statuses
+                        echo "Setting up roles..."
+                        MONGO_URI="$MONGO_URI" npm run set_roles
+
+                        echo "Setting up booking statuses..."
+                        MONGO_URI="$MONGO_URI" npm run set_booking_statuses
+
                         # Start API server in background
                         echo "Starting API server..."
-                        npm run start_server &
+                        MONGO_URI="$MONGO_URI" npm run start_server &
                         API_PID=$!
-                        echo $API_PID > server_pid.txt
-                        sleep 5
+                        echo $API_PID > api_server_pid.txt
+                        sleep 10
 
-                        # Start UI server in background
+                        # Start UI app in background
                         echo "Starting UI app..."
                         cd ui_part
-                        nohup node app.js > ui.log 2>&1 &
+                        nohup node app.js > ../ui.log 2>&1 &
                         UI_PID=$!
                         echo $UI_PID > ../ui_pid.txt
                         cd ..
-
                         sleep 5
 
                         # Run UI tests
@@ -53,29 +65,27 @@ pipeline {
 
     post {
         always {
-            script {
-                // Stop API and UI servers if still running
-                sh '''
-                    if [ -f server_pid.txt ]; then
-                        kill $(cat server_pid.txt) || true
-                        rm server_pid.txt
-                    fi
-                    if [ -f ui_pid.txt ]; then
-                        kill $(cat ui_pid.txt) || true
-                        rm ui_pid.txt
-                    fi
-                '''
+            echo "Cleaning up background processes..."
+            sh '''
+                if [ -f api_server_pid.txt ]; then
+                    kill $(cat api_server_pid.txt) || true
+                    rm api_server_pid.txt
+                fi
 
-                // Publish UI test HTML report
-                publishHTML([
-                    reportName: 'UI Test Report',
-                    reportDir: 'ui_testing/playwright-report',
-                    reportFiles: 'index.html',
-                    keepAll: true,
-                    alwaysLinkToLastBuild: true,
-                    allowMissing: false
-                ])
-            }
+                if [ -f ui_pid.txt ]; then
+                    kill $(cat ui_pid.txt) || true
+                    rm ui_pid.txt
+                fi
+            '''
+
+            echo "Publishing Playwright HTML report..."
+            publishHTML(target: [
+                reportDir: 'ui_testing/playwright-report',
+                reportFiles: 'index.html',
+                reportName: 'UI Test Report',
+                keepAll: true,
+                allowMissing: false
+            ])
         }
     }
 }
