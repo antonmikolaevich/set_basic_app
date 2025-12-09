@@ -108,22 +108,22 @@ pipeline {
     post {
     success {
         echo "All quality gates passed."
-        // Set commit status on the PR using PAT
         setGitHubPullRequestStatus(
-            status: 'SUCCESS',       // SUCCESS, FAILURE, or PENDING
+            state: 'SUCCESS',       // SUCCESS, FAILURE, or PENDING
             context: 'Jenkins CI',  // The label shown in PR checks
-            description: 'All quality gates passed.'
+            message: 'All quality gates passed.'  // replaces description
         )
     }
 
     failure {
         echo "Quality gate failed."
         setGitHubPullRequestStatus(
-            status: 'FAILURE',
+            state: 'FAILURE',
             context: 'Jenkins CI',
-            description: 'One or more stages failed.'
+            message: 'One or more stages failed.'
         )
     }
 }
+
 
 }
