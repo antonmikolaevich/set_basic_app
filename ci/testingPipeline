@@ -19,9 +19,6 @@ pipeline {
             }
         }
 
-        
-        
-
         stage('Unit Tests Coverage') {
             steps {
                 lock(resource: 'mongo-db-access') {
@@ -114,17 +111,15 @@ pipeline {
     success {
         echo "All quality gates passed."
         setGitHubPullRequestStatus(
-            context: 'Testing Pipeline',
-            status: 'SUCCESS',
-            description: 'All quality gates passed.'
+            state: 'SUCCESS',
+            context: 'Testing Pipeline'
         )
     }
     failure {
         echo "Quality gate failed."
         setGitHubPullRequestStatus(
-            context: 'Testing Pipeline',
-            status: 'FAILURE',
-            description: 'Quality gate failed.'
+            state: 'FAILURE',
+            context: 'Testing Pipeline'
         )
     }
 }
