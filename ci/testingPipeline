@@ -121,6 +121,7 @@ pipeline {
             }
         }
 
+
         failure {
             echo "Quality gate failed."
             withCredentials([string(credentialsId: 'GITHUB_PAT_TOKEN', variable: 'TOKEN')]) {
