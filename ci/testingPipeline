@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     stages {
@@ -36,8 +35,14 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
 
-                    // Start server in background with correct env
+                    // Run setup scripts and start server in background
                     sh '''
+                        echo "Setting up roles..."
+                        MONGO_URI="$MONGO_URI" npm run set_roles
+
+                        echo "Setting up booking statuses..."
+                        MONGO_URI="$MONGO_URI" npm run set_booking_statuses
+
                         echo "Starting API server..."
                         MONGO_URI="$MONGO_URI" npm run start_server &
                         SERVER_PID=$!
