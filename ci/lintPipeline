@@ -1,34 +1,68 @@
 properties([
     pipelineTriggers([
-        pollSCM('H/1 * * * *')
+        pollSCM('H/1 * * * *')   // Polls SCM every 1 minute
     ])
 ])
 
 node {
-    stage('install dependencies') {
-        // Clone the repo
-        git credentialsId: 'GITHUB_PAT', url: 'https://github.com/antonmikolaevich/set_basic_app.git', branch: 'master'
 
-        // Install dependencies for API
+    stage('Checkout & Install') {
+        git credentialsId: 'GITHUB_PAT',
+            url: 'https://github.com/antonmikolaevich/set_basic_app.git',
+            branch: 'master'
+
         sh 'npm install'
-
-        // Start API server in background
-        sh 'npm run start_server &'
-
-        // // Optional: start UI part
-        // sh 'cd ui_part && node app.js &'
-
-        // Give servers a few seconds to start
-        sh 'sleep 5'
     }
 
-    stage('lint') {
+    stage('Lint') {
         sh 'npm run lint'
     }
 
+    stage('Unit Tests Coverage') {
+        withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
+            sh '''
+                echo "Setting up roles..."
+                MONGO_URI="$MONGO_URI" npm run set_roles
 
+                echo "Setting up booking statuses..."
+                MONGO_URI="$MONGO_URI" npm run set_booking_statuses
 
-    // stage('unit tests coverage') {
-    //     sh 'npm run unit_tests_coverage'
-    // }
+                echo "Starting API server for Unit Tests Coverage..."
+                MONGO_URI="$MONGO_URI" npm run start_server &
+                SERVER_PID=$!
+                echo "Started server with PID: $SERVER_PID"
+
+                sleep 15
+                echo "Running Unit Tests Coverage..."
+                npm run unit_tests_coverage
+
+                echo "Stopping API server..."
+                kill $SERVER_PID || true
+            '''
+        }
+    }
+
+    stage('Unit Tests') {
+        withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
+            sh '''
+                echo "Setting up roles..."
+                MONGO_URI="$MONGO_URI" npm run set_roles
+
+                echo "Setting up booking statuses..."
+                MONGO_URI="$MONGO_URI" npm run set_booking_statuses
+
+                echo "Starting API server for Unit Tests..."
+                MONGO_URI="$MONGO_URI" npm run start_server &
+                SERVER_PID=$!
+                echo "Started server with PID: $SERVER_PID"
+
+                sleep 15
+                echo "Running Unit Tests..."
+                npm run unit_tests
+
+                echo "Stopping API server..."
+                kill $SERVER_PID || true
+            '''
+        }
+    }
 }
