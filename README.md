@@ -17,6 +17,7 @@
 6. The API will be accessible at `http://localhost:5000`.
 7. API documentation is available at `http://localhost:5000/api-docs`.
 
+
 ### How to run CRUD operations
 1. Either you could use Postman or SwaggerUI endpoints using http://localhost:5000/api-docs.
 2. Another option is to run command 'npm run api_tests', but before running this command, make sure that your server has been started and MongoDB is connected.
