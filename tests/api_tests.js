@@ -10,7 +10,7 @@ let createdBookingId;
 describe("Bookshop API CRUD tests", () => {
     describe("Users suite", () => {
         
-        it.only("Create user - /api/users [POST]", async () => {
+        it("Create user - /api/users [POST]", async () => {
             const response = await sendUserRequest("users", newUser, "post");
             expect(response.status).to.equal(201);
             expect(response.data.user).to.have.property("_id");
@@ -18,7 +18,7 @@ describe("Bookshop API CRUD tests", () => {
             createdUserId = response.data.user._id;
         })
 
-        it.only("Get user by ID - /api/users/:id [GET]", async () => {
+        it("Get user by ID - /api/users/:id [GET]", async () => {
             const response = await sendUserRequest(`users/${createdUserId}`);
             expect(response.status).to.equal(200);
             expect(response.data).to.have.property("_id", createdUserId);
@@ -30,18 +30,18 @@ describe("Bookshop API CRUD tests", () => {
             expect(response.data.role_id._id).to.equal(newUser.role_id);   
         })
 
-        it.only('Get all users - /api/users [GET]', async () => {
+        it('Get all users - /api/users [GET]', async () => {
             const response = await sendUserRequest("users");
             expect(response.status).to.equal(200);
             expect(response.data).to.be.an('object');
         })
 
-        it.only("Update user by ID - /api/users/:id [PUT]", async () => {
+        it("Update user by ID - /api/users/:id [PUT]", async () => {
             const response = await sendUserRequest(`users/${createdUserId}`, newUserUpd, "put");
             expect(response.status).to.equal(200);
         })
 
-        it.only("Get updated user by ID - /api/users/:id [GET]", async () => {
+        it("Get updated user by ID - /api/users/:id [GET]", async () => {
             const response = await sendUserRequest(`users/${createdUserId}`);
             expect(response.status).to.equal(200);
             expect(response.data).to.have.property("_id", createdUserId);
@@ -53,12 +53,12 @@ describe("Bookshop API CRUD tests", () => {
             expect(response.data.role_id._id).to.equal(newUserUpd.role_id);   
      })
 
-        it.only("Delete user by ID - /api/users/:id [DELETE]", async () => {
+        it("Delete user by ID - /api/users/:id [DELETE]", async () => {
             const response = await sendUserRequest(`users/${createdUserId}`, null, "delete");
             expect(response.status).to.equal(200);
         })
 
-        it.only("Get deleted user by ID - /api/users/:id [GET]", async () => {
+        it("Get deleted user by ID - /api/users/:id [GET]", async () => {
             const response = await sendUserRequest(`users/${createdUserId}`);
             expect(response.status).to.equal(404);
         })
@@ -67,14 +67,14 @@ describe("Bookshop API CRUD tests", () => {
 
     describe("Products suite", () => {
 
-        it.only("Create product - /api/products [POST]", async () => {
+        it("Create product - /api/products [POST]", async () => {
             const response = await sendUserRequest("products", newProduct, "post");
             expect(response.status).to.equal(201);
             expect(response.data.product).to.have.property("_id");
             createdProductId = response.data.product._id;
         })
 
-        it.only("Get product by ID - /api/products/:id [GET]", async () => {
+        it("Get product by ID - /api/products/:id [GET]", async () => {
             const response = await sendUserRequest(`products/${createdProductId}`);
             expect(response.status).to.equal(200);
             expect(response.data).to.have.property("_id", createdProductId);
@@ -85,18 +85,18 @@ describe("Bookshop API CRUD tests", () => {
             expect(response.data.image_path).to.equal(newProduct.image_path);  
         })
 
-        it.only('Get all products - /api/products [GET]', async () => {
+        it('Get all products - /api/products [GET]', async () => {
             const response = await sendUserRequest("products");
             expect(response.status).to.equal(200);
             expect(response.data).to.be.an('object');
         })
 
-        it.only("Update product by ID - /api/products/:id [PUT]", async () => {
+        it("Update product by ID - /api/products/:id [PUT]", async () => {
             const response = await sendUserRequest(`products/${createdProductId}`, newProductUpd, "put");
             expect(response.status).to.equal(200);
         });
 
-        it.only("Get updated product by ID - /api/products/:id [GET]", async () => {
+        it("Get updated product by ID - /api/products/:id [GET]", async () => {
             const response = await sendUserRequest(`products/${createdProductId}`);
             expect(response.status).to.equal(200);
             expect(response.data).to.have.property("_id", createdProductId);
@@ -107,12 +107,12 @@ describe("Bookshop API CRUD tests", () => {
             expect(response.data.image_path).to.equal(newProductUpd.image_path);  
         })
 
-        it.only("Delete product by ID - /api/products/:id [DELETE]", async () => {
+        it("Delete product by ID - /api/products/:id [DELETE]", async () => {
             const response = await sendUserRequest(`products/${createdProductId}`, null, "delete");
             expect(response.status).to.equal(200);
         });
 
-        it.only("Get deleted product by ID - /api/products/:id [GET]", async () => {
+        it("Get deleted product by ID - /api/products/:id [GET]", async () => {
             const response = await sendUserRequest(`products/${createdProductId}`);
             expect(response.status).to.equal(404);
         });
