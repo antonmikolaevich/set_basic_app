@@ -4,8 +4,12 @@ pipeline {
 
     // Trigger on Pull Request activity
     triggers {
-        githubPullRequests()
-    }
+    githubPullRequests(
+        scanCredentialsId: 'GITHUB_PAT',
+        repoOwner: 'antonmikolaevich',
+        repoName: 'set_basic_app'
+    )
+}
 
     stages {
 
