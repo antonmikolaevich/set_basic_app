@@ -115,6 +115,7 @@ pipeline {
             description: 'All quality gates passed.'
         )
     }
+    
 
     failure {
         echo "Quality gate failed."
