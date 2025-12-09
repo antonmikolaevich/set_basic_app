@@ -107,25 +107,38 @@ pipeline {
 post {
     success {
         echo "All quality gates passed."
-        githubNotify(
-            credentialsId: 'GITHUB_PAT',  // Your secret text ID
-            status: 'SUCCESS',             // SUCCESS, FAILURE, or PENDING
-            description: 'All quality gates passed',
-            context: 'Jenkins CI'
-        )
+        withCredentials([string(credentialsId: 'GITHUB_PAT', variable: 'TOKEN')]) {
+            sh """
+            curl -X POST \
+            -H "Authorization: token \$TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/<ORG>/<REPO>/statuses/\${GIT_COMMIT} \
+            -d '{
+                "state": "success",
+                "context": "Jenkins CI",
+                "description": "All quality gates passed"
+            }'
+            """
+        }
     }
 
     failure {
         echo "Quality gate failed."
-        githubNotify(
-            credentialsId: 'GITHUB_PAT',
-            status: 'FAILURE',
-            description: 'One or more stages failed',
-            context: 'Jenkins CI'
-        )
+        withCredentials([string(credentialsId: 'GITHUB_PAT', variable: 'TOKEN')]) {
+            sh """
+            curl -X POST \
+            -H "Authorization: token \$TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/<ORG>/<REPO>/statuses/\${GIT_COMMIT} \
+            -d '{
+                "state": "failure",
+                "context": "Jenkins CI",
+                "description": "One or more stages failed"
+            }'
+            """
+        }
     }
 }
-
 
 
 }
