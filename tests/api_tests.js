@@ -67,14 +67,14 @@ describe("Bookshop API CRUD tests", () => {
 
     describe("Products suite", () => {
 
-        it("Create product - /api/products [POST]", async () => {
+        it.only("Create product - /api/products [POST]", async () => {
             const response = await sendUserRequest("products", newProduct, "post");
             expect(response.status).to.equal(201);
             expect(response.data.product).to.have.property("_id");
             createdProductId = response.data.product._id;
         })
 
-        it("Get product by ID - /api/products/:id [GET]", async () => {
+        it.only("Get product by ID - /api/products/:id [GET]", async () => {
             const response = await sendUserRequest(`products/${createdProductId}`);
             expect(response.status).to.equal(200);
             expect(response.data).to.have.property("_id", createdProductId);
@@ -85,18 +85,18 @@ describe("Bookshop API CRUD tests", () => {
             expect(response.data.image_path).to.equal(newProduct.image_path);  
         })
 
-        it('Get all products - /api/products [GET]', async () => {
+        it.only('Get all products - /api/products [GET]', async () => {
             const response = await sendUserRequest("products");
             expect(response.status).to.equal(200);
             expect(response.data).to.be.an('object');
         })
 
-        it("Update product by ID - /api/products/:id [PUT]", async () => {
+        it.only("Update product by ID - /api/products/:id [PUT]", async () => {
             const response = await sendUserRequest(`products/${createdProductId}`, newProductUpd, "put");
             expect(response.status).to.equal(200);
         });
 
-        it("Get updated product by ID - /api/products/:id [GET]", async () => {
+        it.only("Get updated product by ID - /api/products/:id [GET]", async () => {
             const response = await sendUserRequest(`products/${createdProductId}`);
             expect(response.status).to.equal(200);
             expect(response.data).to.have.property("_id", createdProductId);
@@ -107,12 +107,12 @@ describe("Bookshop API CRUD tests", () => {
             expect(response.data.image_path).to.equal(newProductUpd.image_path);  
         })
 
-        it("Delete product by ID - /api/products/:id [DELETE]", async () => {
+        it.only("Delete product by ID - /api/products/:id [DELETE]", async () => {
             const response = await sendUserRequest(`products/${createdProductId}`, null, "delete");
             expect(response.status).to.equal(200);
         });
 
-        it("Get deleted product by ID - /api/products/:id [GET]", async () => {
+        it.only("Get deleted product by ID - /api/products/:id [GET]", async () => {
             const response = await sendUserRequest(`products/${createdProductId}`);
             expect(response.status).to.equal(404);
         });
