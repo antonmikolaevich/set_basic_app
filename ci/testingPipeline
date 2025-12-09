@@ -1,8 +1,10 @@
+import io.jenkins.plugins.checks.api.ChecksStatus
+import io.jenkins.plugins.checks.api.ChecksConclusion
+
 pipeline {
     agent any
 
     stages {
-
         stage('Checkout & Install') {
             steps {
                 git credentialsId: 'GITHUB_PAT',
@@ -23,7 +25,6 @@ pipeline {
             steps {
                 lock(resource: 'mongo-db-access') {
                     withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
-
                         sh '''
                             echo "Setting up roles..."
                             MONGO_URI="$MONGO_URI" npm run set_roles
@@ -48,12 +49,10 @@ pipeline {
             }
         }
 
-
         stage('Unit Tests') {
             steps {
                 lock(resource: 'mongo-db-access') {
                     withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
-
                         sh '''
                             echo "Setting up roles..."
                             MONGO_URI="$MONGO_URI" npm run set_roles
@@ -82,7 +81,6 @@ pipeline {
             steps {
                 lock(resource: 'mongo-db-access') {
                     withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
-
                         sh '''
                             echo "Setting up roles..."
                             MONGO_URI="$MONGO_URI" npm run set_roles
@@ -108,32 +106,21 @@ pipeline {
         }
     }
 
-
-
     post {
-    success {
-        echo "All quality gates passed."
-        publishChecks name: 'Testing Pipeline',
-                      status: 'completed',
-                      conclusion: 'success',
-                      output: [
-                        title: 'Pipeline Success',
-                        summary: 'All quality gates passed successfully.',
-                        text: 'The build finished without issues.'
-                      ]
-    }
+        success {
+            echo "All quality gates passed."
+            publishChecks name: 'Testing Pipeline',
+                          status: ChecksStatus.COMPLETED,
+                          conclusion: ChecksConclusion.SUCCESS,
+                          text: 'All quality gates passed successfully. The build finished without issues.'
+        }
 
-    failure {
-        echo "Quality gate failed."
-        publishChecks name: 'Testing Pipeline',
-                      status: 'completed',
-                      conclusion: 'failure',
-                      output: [
-                        title: 'Pipeline Failed',
-                        summary: 'One or more stages failed.',
-                        text: 'Check the Jenkins logs for the specific failure.'
-                      ]
+        failure {
+            echo "Quality gate failed."
+            publishChecks name: 'Testing Pipeline',
+                          status: ChecksStatus.COMPLETED,
+                          conclusion: ChecksConclusion.FAILURE,
+                          text: 'One or more stages failed. Check the Jenkins logs for details.'
+        }
     }
-}
-
 }
