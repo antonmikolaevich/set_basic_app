@@ -17,8 +17,12 @@ pipeline {
         stage('Lint') {
             steps {
                 sh 'npm run lint'
+                sh 'curl https://ifconfig.me'
             }
         }
+
+
+
 
         // stage('Unit Tests Coverage') {
         //     steps {
@@ -32,6 +36,8 @@ pipeline {
         //     }
         // }
 
+
+
         stage('API Tests') {
             steps {
                 withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
@@ -43,7 +49,7 @@ pipeline {
                         SERVER_PID=$!
                         echo "Server PID: $SERVER_PID"
 
-                        sleep 15
+                        sleep 5
                         echo "Running API tests..."
                         npm run api_tests
 
