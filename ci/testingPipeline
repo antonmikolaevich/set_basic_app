@@ -105,25 +105,28 @@ pipeline {
     }
 
 
-    post {
+post {
     success {
         echo "All quality gates passed."
-        setGitHubPullRequestStatus(
-            state: 'SUCCESS',       // SUCCESS, FAILURE, or PENDING
-            context: 'Jenkins CI',  // The label shown in PR checks
-            message: 'All quality gates passed.'  // replaces description
+        githubNotify(
+            credentialsId: 'GITHUB_PAT',  // Your secret text ID
+            status: 'SUCCESS',             // SUCCESS, FAILURE, or PENDING
+            description: 'All quality gates passed',
+            context: 'Jenkins CI'
         )
     }
 
     failure {
         echo "Quality gate failed."
-        setGitHubPullRequestStatus(
-            state: 'FAILURE',
-            context: 'Jenkins CI',
-            message: 'One or more stages failed.'
+        githubNotify(
+            credentialsId: 'GITHUB_PAT',
+            status: 'FAILURE',
+            description: 'One or more stages failed',
+            context: 'Jenkins CI'
         )
     }
 }
+
 
 
 }
