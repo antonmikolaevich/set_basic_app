@@ -63,7 +63,9 @@ pipeline {
                         npm install
 
                         echo "Installing Playwright browsers..."
-                        npx playwright install --if-not-installed
+                        npx playwright install
+                        echo "Current directory before tests: $(pwd)"
+                        ls -la
 
                         echo "Running UI tests..."
                         npm run test
