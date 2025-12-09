@@ -19,9 +19,6 @@ pipeline {
             }
         }
 
-        
-        
-
         stage('Unit Tests Coverage') {
             steps {
                 lock(resource: 'mongo-db-access') {
