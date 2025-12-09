@@ -22,6 +22,11 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
                     sh '''
+                        # Show current workspace structure
+                        echo "Current directory: $(pwd)"
+                        echo "Files and folders in workspace:"
+                        ls -R
+
                         # Setup MongoDB roles and statuses
                         echo "Setting up roles..."
                         MONGO_URI="$MONGO_URI" npm run set_roles
