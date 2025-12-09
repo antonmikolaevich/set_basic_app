@@ -20,6 +20,9 @@ pipeline {
             }
         }
 
+
+
+
         // stage('Unit Tests Coverage') {
         //     steps {
         //         sh 'npm run unit_tests_coverage'
@@ -31,6 +34,8 @@ pipeline {
         //         sh 'npm run unit_tests'
         //     }
         // }
+
+        
 
         stage('API Tests') {
             steps {
