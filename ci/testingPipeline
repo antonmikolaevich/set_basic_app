@@ -104,7 +104,6 @@ pipeline {
         }
     }
 
-
 post {
     success {
         echo "All quality gates passed."
