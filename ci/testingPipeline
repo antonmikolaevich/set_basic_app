@@ -2,15 +2,6 @@ pipeline {
 
     agent any
 
-    // Trigger on Pull Request activity
-    triggers {
-    githubPullRequests(
-        scanCredentialsId: 'GITHUB_PAT',
-        repoOwner: 'antonmikolaevich',
-        repoName: 'set_basic_app'
-    )
-}
-
     stages {
 
         stage('Checkout & Install') {
