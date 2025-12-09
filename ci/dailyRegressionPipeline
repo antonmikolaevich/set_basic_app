@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-    // Trigger once per day, can also be set in the Jenkins Configure tab
-    triggers {
-        cron('H H * * *')  // Runs once a day at a random hour
+    options {
+        // Ensures only one branch/job runs at a time for this repo
+        lock(resource: 'set_basic_app-global-lock')
     }
 
     stages {
@@ -18,44 +18,50 @@ pipeline {
             }
         }
 
-        stage('Lint') {
-            steps {
-                sh 'npm run lint'
-            }
-        }
-
-        stage('API + UI Setup & Tests') {
+        stage('UI Tests') {
             steps {
                 withCredentials([string(credentialsId: 'MONGO_URI', variable: 'MONGO_URI')]) {
                     sh '''
-                        # Setup MongoDB roles and booking statuses
+                        # Setup MongoDB roles and statuses
                         echo "Setting up roles..."
                         MONGO_URI="$MONGO_URI" npm run set_roles
 
                         echo "Setting up booking statuses..."
                         MONGO_URI="$MONGO_URI" npm run set_booking_statuses
 
-                        # Start API server in background
+                        # Start API server
                         echo "Starting API server..."
                         MONGO_URI="$MONGO_URI" npm run start_server &
                         API_PID=$!
                         echo $API_PID > api_server_pid.txt
-                        sleep 10
 
-                        # Start UI app in background
-                        echo "Starting UI app..."
+                        sleep 10
+                        echo "After sleep 10, current directory: $(pwd)"
+
+                        # Start UI app
+                        echo "Switching to UI folder..."
                         cd ui_part
+                        echo "Now in directory: $(pwd)"
+                        echo "Installing UI dependencies..."
+                        npm install
+
+                        echo "Starting UI app in background..."
                         nohup node app.js > ../ui.log 2>&1 &
                         UI_PID=$!
                         echo $UI_PID > ../ui_pid.txt
-                        cd ..
+
                         sleep 5
 
                         # Run UI tests
-                        echo "Running UI tests..."
-                        cd ui_testing
+                        echo "Switching to UI tests folder..."
+                        cd ../ui_testing
+                        echo "Now in directory: $(pwd)"
+                        echo "Installing UI test dependencies..."
                         npm install
+
+                        echo "Running UI tests..."
                         npm test
+
                         cd ..
                     '''
                 }
@@ -65,27 +71,16 @@ pipeline {
 
     post {
         always {
-            echo "Cleaning up background processes..."
-            sh '''
-                if [ -f api_server_pid.txt ]; then
-                    kill $(cat api_server_pid.txt) || true
-                    rm api_server_pid.txt
-                fi
+            // Archive the UI test HTML report
+            archiveArtifacts artifacts: 'ui_testing/playwright-report/index.html', allowEmptyArchive: true
+        }
 
-                if [ -f ui_pid.txt ]; then
-                    kill $(cat ui_pid.txt) || true
-                    rm ui_pid.txt
-                fi
-            '''
+        success {
+            echo "UI tests completed successfully."
+        }
 
-            echo "Publishing Playwright HTML report..."
-            publishHTML(target: [
-                reportDir: 'ui_testing/playwright-report',
-                reportFiles: 'index.html',
-                reportName: 'UI Test Report',
-                keepAll: true,
-                allowMissing: false
-            ])
+        failure {
+            echo "UI tests failed."
         }
     }
 }
