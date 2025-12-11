@@ -23,6 +23,7 @@ pipeline {
                 sh 'npm run lint'
             }
         }
+        
 
         stage('Unit Tests Coverage') {
             steps {
