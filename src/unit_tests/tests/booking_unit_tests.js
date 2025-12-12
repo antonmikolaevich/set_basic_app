@@ -811,4 +811,143 @@ it('should handle internal error gracefully', async () => {
       expect(res.status).toHaveBeenCalledWith(500);
     });
   });
+
+  // ---------- UPDATE BOOKING STATUS ----------
+  describe('updateBookingStatus', () => {
+    it('should return 400 if bookingId is missing', async () => {
+      const req = { params: {}, body: { status_id: 's1' } };
+      const res = mockRes();
+      
+      await bookingController.updateBookingStatus(req, res);
+      
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Booking ID is required' });
+    });
+
+    it('should return 400 if status_id is missing', async () => {
+      const req = { params: { id: 'b1' }, body: {} };
+      const res = mockRes();
+      
+      await bookingController.updateBookingStatus(req, res);
+      
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({ message: 'status_id is required' });
+    });
+
+    it('should return 404 if booking not found', async () => {
+      const req = { params: { id: 'b1' }, body: { status_id: 's1' } };
+      const res = mockRes();
+      
+      Booking.findById.mockResolvedValue(null);
+      
+      await bookingController.updateBookingStatus(req, res);
+      
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Booking not found' });
+    });
+
+    it('should update status when status_id is 24 characters (ObjectId)', async () => {
+      const req = { params: { id: 'b1' }, body: { status_id: '507f1f77bcf86cd799439011' } };
+      const res = mockRes();
+      
+      const mockBooking = { _id: 'b1' };
+      const mockStatus = { _id: '507f1f77bcf86cd799439011', name: 'Delivered' };
+      const mockUpdatedBooking = {
+        _id: 'b1',
+        status_id: mockStatus._id,
+        user_id: { name: 'John', email: 'john@example.com' },
+        product_id: { name: 'Book', price: 10 }
+      };
+      
+      Booking.findById.mockResolvedValue(mockBooking);
+      BookingStatus.findById.mockResolvedValue(mockStatus);
+      Booking.findByIdAndUpdate.mockReturnValue({
+        populate: jest.fn().mockReturnValue({
+          populate: jest.fn().mockReturnValue({
+            populate: jest.fn().mockResolvedValue(mockUpdatedBooking)
+          })
+        })
+      });
+      
+      await bookingController.updateBookingStatus(req, res);
+      
+      expect(BookingStatus.findById).toHaveBeenCalledWith('507f1f77bcf86cd799439011');
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'Booking status updated successfully' })
+      );
+    });
+
+    it('should update status when status_id is a name (not 24 characters)', async () => {
+      const req = { params: { id: 'b1' }, body: { status_id: 'Delivered' } };
+      const res = mockRes();
+      
+      const mockBooking = { _id: 'b1' };
+      const mockStatus = { _id: 's1', name: 'Delivered' };
+      const mockUpdatedBooking = {
+        _id: 'b1',
+        status_id: mockStatus._id,
+        user_id: { name: 'John', email: 'john@example.com' },
+        product_id: { name: 'Book', price: 10 }
+      };
+      
+      Booking.findById.mockResolvedValue(mockBooking);
+      BookingStatus.findOne.mockResolvedValue(mockStatus);
+      Booking.findByIdAndUpdate.mockReturnValue({
+        populate: jest.fn().mockReturnValue({
+          populate: jest.fn().mockReturnValue({
+            populate: jest.fn().mockResolvedValue(mockUpdatedBooking)
+          })
+        })
+      });
+      
+      await bookingController.updateBookingStatus(req, res);
+      
+      expect(BookingStatus.findOne).toHaveBeenCalledWith({ name: 'Delivered' });
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'Booking status updated successfully' })
+      );
+    });
+
+    it('should return 404 if status not found (by ID)', async () => {
+      const req = { params: { id: 'b1' }, body: { status_id: '507f1f77bcf86cd799439011' } };
+      const res = mockRes();
+      
+      Booking.findById.mockResolvedValue({ _id: 'b1' });
+      BookingStatus.findById.mockResolvedValue(null);
+      
+      await bookingController.updateBookingStatus(req, res);
+      
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Booking status not found' });
+    });
+
+    it('should return 404 if status not found (by name)', async () => {
+      const req = { params: { id: 'b1' }, body: { status_id: 'InvalidStatus' } };
+      const res = mockRes();
+      
+      Booking.findById.mockResolvedValue({ _id: 'b1' });
+      BookingStatus.findOne.mockResolvedValue(null);
+      
+      await bookingController.updateBookingStatus(req, res);
+      
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({ message: 'Booking status not found' });
+    });
+
+    it('should handle internal errors', async () => {
+      const req = { params: { id: 'b1' }, body: { status_id: 's1' } };
+      const res = mockRes();
+      
+      Booking.findById.mockRejectedValue(new Error('DB Error'));
+      
+      await bookingController.updateBookingStatus(req, res);
+      
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'Error updating booking status' })
+      );
+    });
+  });
 });

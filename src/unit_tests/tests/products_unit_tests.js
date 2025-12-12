@@ -47,15 +47,17 @@ describe('Product Controller', () => {
       });
     });
 
-    // SKIPPED: Error handling test causes worker crash
-    // it('should handle errors properly', async () => {
-    //   Product.find.mockRejectedValue(new Error('DB Error'));
-    //   await productController.getProducts(req, res);
-    //   expect(res.status).toHaveBeenCalledWith(500);
-    //   expect(res.json).toHaveBeenCalledWith(
-    //     expect.objectContaining({ message: 'Error retrieving products' })
-    //   );
-    // });
+    it('should handle DB errors when retrieving products', async () => {
+      // Mock countDocuments to throw an error
+      Product.countDocuments = jest.fn().mockRejectedValue(new Error('DB Error'));
+
+      await productController.getProducts(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'Error retrieving products' })
+      );
+    });
   });
 
   // GET SINGLE PRODUCT

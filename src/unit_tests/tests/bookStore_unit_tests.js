@@ -99,17 +99,17 @@ describe('BookStore Controller', () => {
       });
     });
 
-    // SKIPPED: Error handling test causes worker crash
-    // it('should handle DB errors', async () => {
-    //   BookStore.find.mockReturnValue({
-    //     populate: jest.fn().mockRejectedValue(new Error('DB Error'))
-    //   });
-    //   await bookStoreController.getBookStoreItems(req, res);
-    //   expect(res.status).toHaveBeenCalledWith(500);
-    //   expect(res.json).toHaveBeenCalledWith(
-    //     expect.objectContaining({ message: 'Error retrieving BookStore items' })
-    //   );
-    // });
+    it('should handle DB errors when retrieving BookStore items', async () => {
+      // Mock countDocuments to throw an error
+      BookStore.countDocuments = jest.fn().mockRejectedValue(new Error('DB Error'));
+
+      await bookStoreController.getBookStoreItems(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith(
+        expect.objectContaining({ message: 'Error retrieving BookStore items' })
+      );
+    });
   });
 
   // -------------------------------
@@ -231,6 +231,28 @@ describe('BookStore Controller', () => {
     expect.objectContaining({ message: 'BookStore item updated successfully' })
   );
 });
+
+    it('should not update available_qty when it is undefined', async () => {
+      req.params = { id: '1' };
+      req.body = { booked_qty: 10, sold_qty: 5 }; // available_qty intentionally missing
+
+      const mockItem = {
+        available_qty: 100,
+        booked_qty: 3,
+        sold_qty: 0,
+        save: jest.fn().mockResolvedValue(true),
+      };
+
+      BookStore.findById.mockResolvedValue(mockItem);
+
+      await bookStoreController.updateBookStoreItem(req, res);
+
+      expect(mockItem.available_qty).toBe(100); // unchanged
+      expect(mockItem.booked_qty).toBe(10); // updated
+      expect(mockItem.sold_qty).toBe(5); // updated
+      expect(mockItem.save).toHaveBeenCalled();
+      expect(res.status).toHaveBeenCalledWith(200);
+    });
   });
 
   // -------------------------------
