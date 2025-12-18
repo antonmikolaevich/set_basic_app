@@ -22,6 +22,7 @@
 1. Either you could use Postman or SwaggerUI endpoints using http://localhost:5000/api-docs.
 2. Another option is to run command 'npm run api_tests', but before running this command, make sure that your server has been started and MongoDB is connected.
 
+
 ### Structure of the project
 - `app.js`: The main application file that sets up the Express server and connects to MongoDB.
 - `controllers/`: Contains the controller files that handle the business logic for different routes.    
